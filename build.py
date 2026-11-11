@@ -6,8 +6,10 @@ Uso:
 
 Qué editar:
     config.json              -> enlaces de contacto, repositorio y LinkedIn
-    datos/proyectos.json     -> textos de cada proyecto
+    datos/proyectos.json     -> textos de los proyectos del banco
+    datos/exploraciones.json -> textos de los proyectos personales de ciencia de datos
     datos/tableros.json      -> cifras ficticias que alimentan los tableros
+    datos/ciencia.json       -> resultados de analisis/ejecutar_todo.py (no editar a mano)
     plantilla/index.html     -> diseño de la página
     plantilla/vendor/        -> Chart.js (biblioteca de gráficos)
 
@@ -22,7 +24,7 @@ RAIZ = Path(__file__).resolve().parent
 PLANTILLA = RAIZ / "plantilla" / "index.html"
 SALIDA = RAIZ / "docs" / "index.html"
 
-CAMPOS_PROYECTO = {"id", "tipo", "titulo", "carpeta", "lista", "tags", "resumen",
+CAMPOS_PROYECTO = {"id", "tipo", "titulo", "carpeta", "areas", "lista", "tags", "resumen",
                    "problema", "solucion", "resultado", "tablero"}
 
 
@@ -45,6 +47,14 @@ def validar_proyectos(proyectos: list) -> None:
             sys.exit(f"ERROR: al proyecto {p.get('id', '?')} le faltan campos: {', '.join(sorted(faltan))}")
 
 
+def enlazar_codigo(proyectos: list, repo: str) -> None:
+    """Agrega el enlace al código solo si la carpeta o el archivo existe en el repositorio."""
+    for p in proyectos:
+        ruta = RAIZ / p["carpeta"]
+        tipo = "blob" if ruta.is_file() else "tree"
+        p["enlace_codigo"] = f"{repo}/{tipo}/main/{p['carpeta']}" if repo and ruta.exists() else ""
+
+
 def js(valor) -> str:
     """Serializa a JSON seguro para incrustar dentro de una etiqueta <script>."""
     return json.dumps(valor, ensure_ascii=False).replace("</", "<\\/")
@@ -53,17 +63,23 @@ def js(valor) -> str:
 def construir() -> Path:
     config = leer_json(RAIZ / "config.json")
     proyectos = leer_json(RAIZ / "datos" / "proyectos.json")
+    exploraciones = leer_json(RAIZ / "datos" / "exploraciones.json")
     tableros = leer_json(RAIZ / "datos" / "tableros.json")
-    validar_proyectos(proyectos)
+    ciencia = leer_json(RAIZ / "datos" / "ciencia.json")
+    validar_proyectos(proyectos + exploraciones)
+    repo = config.get("repo", "").rstrip("/")
+    enlazar_codigo(proyectos + exploraciones, repo)
 
     reemplazos = {
-        "@@REPO@@": js(config.get("repo", "")),
+        "@@REPO@@": js(repo),
         "@@LINKEDIN@@": js(config.get("linkedin", "")),
         "@@CORREO@@": config["correo"],
         "@@WA_NUMERO@@": config["whatsapp_numero"],
         "@@WA_VISIBLE@@": config["whatsapp_visible"],
         "@@DATOS@@": js(tableros),
         "@@PROYECTOS@@": js(proyectos),
+        "@@EXPLORACIONES@@": js(exploraciones),
+        "@@CIENCIA@@": js(ciencia),
     }
 
     html = PLANTILLA.read_text(encoding="utf-8")

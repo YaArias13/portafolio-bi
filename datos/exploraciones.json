@@ -1,0 +1,68 @@
+[
+  {
+    "id": "e1", "tipo": "Clasificación", "titulo": "¿Quién se va a ir? Un modelo predictivo de fuga",
+    "carpeta": "analisis/02_modelo_fuga.py",
+    "areas": ["Python", "Modelos"],
+    "lista": "Comparo un puntaje de reglas hecho a mano contra dos modelos entrenados con datos, sobre los mismos clientes de prueba.",
+    "tags": "Python, scikit-learn, regresión logística, gradient boosting",
+    "resumen": "El modelo de churn que hice en SQL reparte puntos con reglas fijas. Quise saber cuánto mejora si los pesos los aprende un modelo.",
+    "encabezados": ["La pregunta", "Cómo lo hice", "Qué encontré"],
+    "problema": "Un puntaje de reglas es fácil de explicar, pero los pesos salen de la intuición. Si un modelo estadístico ordena mejor a los clientes, el call center llama primero a quienes de verdad están por irse.",
+    "solucion": [
+      "Simulé 6,000 clientes con su comportamiento y una probabilidad de fuga que depende de él, con ruido.",
+      "Separé el 25 % como prueba, estratificado, y no lo toqué hasta el final.",
+      "Entrené una regresión logística y un gradient boosting, y los comparé con el puntaje de reglas usando AUC y cuánta fuga cae en el 20 % de mayor riesgo.",
+      "Medí qué variables pesan más con importancia por permutación, que funciona igual para cualquier modelo."
+    ],
+    "resultado": [
+      "Los dos modelos ordenan mejor que las reglas a mano.",
+      "El modelo más simple quedó arriba, así que es el que usaría: se explica con una tabla de coeficientes.",
+      "La inactividad y la cantidad de productos son las señales más fuertes."
+    ],
+    "tablero": "Los resultados"
+  },
+  {
+    "id": "e2", "tipo": "Series de tiempo", "titulo": "Pronóstico de ventas a seis meses",
+    "carpeta": "analisis/03_pronostico.py",
+    "areas": ["Python", "Modelos"],
+    "lista": "Una proyección con su rango de incertidumbre, probada antes contra un año que el modelo no había visto.",
+    "tags": "Python, statsmodels, Holt-Winters, prueba hacia atrás",
+    "resumen": "Un pronóstico solo sirve si se sabe cuánto se equivoca. Por eso lo probé primero hacia atrás y lo comparé con la regla más simple posible.",
+    "encabezados": ["La pregunta", "Cómo lo hice", "Qué encontré"],
+    "problema": "Las metas comerciales se suelen fijar con «lo del año pasado más un porcentaje». Quería una proyección que separe tendencia y estacionalidad y que diga qué tan ancho es el margen de error.",
+    "solucion": [
+      "Simulé 48 meses de ventas con tendencia creciente y un pico en diciembre.",
+      "Entrené Holt-Winters con los primeros 36 meses y lo comparé contra los 12 siguientes.",
+      "Usé como referencia la regla «lo mismo que el mismo mes del año anterior».",
+      "Reentrené con toda la historia y proyecté 6 meses con un rango del 80 %."
+    ],
+    "resultado": [
+      "El modelo se equivoca mucho menos que la regla simple en el año de prueba.",
+      "El rango se abre mes a mes: el sexto mes es bastante menos seguro que el primero.",
+      "Con datos reales el error sería mayor; estos son simulados y más limpios que la realidad."
+    ],
+    "tablero": "Los resultados"
+  },
+  {
+    "id": "e3", "tipo": "Segmentación", "titulo": "Grupos de clientes sin etiquetas previas",
+    "carpeta": "analisis/04_segmentacion.py",
+    "areas": ["Python", "Modelos"],
+    "lista": "K-means sobre el comportamiento de los clientes, con el número de grupos elegido por los datos y no por mí.",
+    "tags": "Python, scikit-learn, K-means, silueta, PCA",
+    "resumen": "En lugar de segmentar por saldo o por edad, dejé que el algoritmo agrupe a los clientes por cómo se comportan.",
+    "encabezados": ["La pregunta", "Cómo lo hice", "Qué encontré"],
+    "problema": "Los segmentos comerciales habituales (masivo, pyme, premium) dicen cuánto tiene un cliente, no cómo usa el banco. Dos clientes con el mismo saldo pueden necesitar ofertas muy distintas.",
+    "solucion": [
+      "Tomé cinco variables de comportamiento: antigüedad, productos, saldo, uso digital y días sin actividad.",
+      "Las escalé, con el saldo en logaritmo porque es muy asimétrico.",
+      "Probé de 2 a 7 grupos y elegí el número con mejor coeficiente de silueta.",
+      "Describí cada grupo con sus promedios y crucé contra la fuga para ver cuál pide atención."
+    ],
+    "resultado": [
+      "Salen tres grupos claros, y uno de ellos concentra la fuga.",
+      "Los datos simulados tenían cuatro perfiles: el algoritmo juntó dos que se parecen. Es un buen recordatorio de que la silueta mide separación, no utilidad para el negocio.",
+      "El mapa en dos dimensiones es solo para dibujar; el agrupamiento usa las cinco variables."
+    ],
+    "tablero": "Los resultados"
+  }
+]

@@ -125,9 +125,41 @@ pre.codigo { margin: 0; padding: 14px; border-radius: 4px; background: var(--sof
 .tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
 .siguiente { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--rule); font: 500 .95rem/1.4 var(--sans); }
 
+/* ---------- Portada con el mapa de clientes ---------- */
+.portada { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px 56px; align-items: center; padding: 56px 0 28px; }
+.portada h1 { font-size: clamp(2rem, 3.6vw, 2.7rem); line-height: 1.15; margin: 0 0 22px; }
+.portada p { margin: 0 0 16px; }
+.mapa { margin: 0; }
+.mapa .lienzo { height: 400px; }
+.mapa figcaption { font: 400 .9rem/1.5 var(--sans); color: var(--muted); margin-top: 8px; }
+.leyenda { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0 0 6px; padding: 0; list-style: none; font: 500 .88rem/1.4 var(--sans); }
+.leyenda li { display: inline-flex; align-items: center; gap: 7px; }
+.leyenda i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); }
+.tema { font: 500 .95rem/1.4 var(--sans); color: var(--muted); background: none; border: 0; padding: 0; cursor: pointer; }
+.tema:hover { color: var(--ink); }
+
+/* ---------- Filtros y miniaturas ---------- */
+.filtros { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+.filtros button { font: 500 .88rem/1 var(--sans); padding: 7px 12px; border-radius: 999px; border: 1px solid var(--rule); background: transparent; color: var(--muted); cursor: pointer; }
+.filtros button:hover { color: var(--ink); border-color: var(--muted); }
+.filtros button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.proyectos li { grid-template-columns: 2.2rem minmax(0, 1fr) 132px; column-gap: 0; }
+.proyectos.sin-numero li { grid-template-columns: minmax(0, 1fr) 132px; }
+.proyectos .mini { align-self: center; justify-self: end; color: var(--s1); }
+.proyectos .mini svg { display: block; }
+.vacio { font: 400 .95rem/1.5 var(--sans); color: var(--muted); padding: 14px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.aviso { font: 400 .95rem/1.55 var(--sans); background: var(--soft); border-left: 3px solid var(--accent); padding: 10px 14px; margin: 0 0 22px; }
+
+@media (max-width: 900px) {
+  .portada { grid-template-columns: 1fr; padding-top: 40px; }
+  .mapa .lienzo { height: 320px; }
+}
 @media (max-width: 760px) {
   .dos { grid-template-columns: 1fr; }
   body { font-size: 1.03rem; }
+  .proyectos li, .proyectos.sin-numero li { grid-template-columns: 2.2rem minmax(0, 1fr); }
+  .proyectos.sin-numero li { grid-template-columns: minmax(0, 1fr); }
+  .proyectos .mini { display: none; }
 }
 </style>
 </head>
@@ -135,23 +167,42 @@ pre.codigo { margin: 0; padding: 14px; border-radius: 4px; background: var(--sof
 <div class="col">
   <header class="top">
     <a href="#inicio">Yara Arias</a>
-    <nav aria-label="Secciones"><a href="#proyectos">Proyectos</a><a href="#como-trabajo">Cómo trabajo</a><a href="#contacto">Contacto</a></nav>
+    <nav aria-label="Secciones"><a href="#proyectos">Proyectos</a><a href="#exploraciones">Ciencia de datos</a><a href="#como-trabajo">Cómo trabajo</a><a href="#contacto">Contacto</a><button class="tema" type="button" id="tema">Modo oscuro</button></nav>
   </header>
 </div>
 
 <!-- ===================================================== PORTADA -->
 <main id="vista-inicio">
-  <div class="col">
-    <div class="intro" id="inicio">
-      <h1>Hola, soy Yara. Trabajo con datos en banca, en Santo Domingo.</h1>
-      <p>Mi día a día es SQL Server, Power BI y Excel, con Python para automatizar lo que se repite. Hago <mark>tableros para tomar decisiones</mark>, procesos que cargan y validan la información de cada cierre, y reportes para que las áreas de negocio vendan mejor.</p>
-      <p>Aquí reuní algunos de esos trabajos. Como son de un banco, cambié los nombres de las tablas y usé datos inventados, pero la lógica es la misma que uso en producción. Cada proyecto tiene su propia página con lo que resolví y un tablero con los resultados: entra desde «Ver descripción y tablero».</p>
+  <div class="ancho">
+    <div class="portada" id="inicio">
+      <div>
+        <h1>Hola, soy Yara. Trabajo con datos en banca, en Santo Domingo.</h1>
+        <p>Mi día a día es SQL Server, Power BI y Excel, con Python para automatizar lo que se repite. Hago <mark>tableros para tomar decisiones</mark>, procesos que cargan y validan la información de cada cierre, y reportes para que las áreas de negocio vendan mejor.</p>
+        <p>Por mi cuenta exploro modelos predictivos, pronósticos y segmentación con Python. El mapa de al lado sale de uno de esos análisis.</p>
+      </div>
+      <figure class="mapa">
+        <ul class="leyenda" id="mapa-leyenda"></ul>
+        <div class="lienzo"><canvas id="mapa" role="img" aria-label="Mapa de clientes simulados, coloreados por segmento"></canvas></div>
+        <figcaption>Cada punto es un cliente simulado. Los colores son los grupos que encontró un algoritmo a partir de su comportamiento, sin que nadie le dijera cuáles buscar. <a href="#proyecto-e3">Ver cómo lo hice</a></figcaption>
+      </figure>
     </div>
+  </div>
+  <div class="col">
+    <p style="margin:8px 0 0">Los trabajos del banco están con otros nombres de tablas y datos inventados, pero la lógica es la misma que uso en producción. Cada proyecto tiene su página con lo que resolví y un tablero con los resultados.</p>
 
     <section class="sec" id="proyectos">
       <h2>Proyectos</h2>
-      <p class="sec-lead">Ordenados más o menos como fueron llegando.</p>
+      <p class="sec-lead">Trabajos del banco, ordenados más o menos como fueron llegando.</p>
+      <div class="filtros" id="filtros" role="group" aria-label="Filtrar por herramienta"></div>
       <ol class="proyectos" id="lista-proyectos"></ol>
+      <p class="vacio" id="vacio-proyectos" hidden>Ningún proyecto del banco usa esa herramienta. Mira más abajo, en ciencia de datos.</p>
+    </section>
+
+    <section class="sec" id="exploraciones">
+      <h2>Exploraciones con ciencia de datos</h2>
+      <p class="sec-lead">Proyectos personales, hechos en Python con datos simulados. El código de cada uno está en el repositorio.</p>
+      <ul class="proyectos sin-numero" id="lista-exploraciones"></ul>
+      <p class="vacio" id="vacio-exploraciones" hidden>Ninguna exploración usa esa herramienta.</p>
     </section>
 
     <section class="sec prosa" id="como-trabajo">
@@ -182,16 +233,17 @@ pre.codigo { margin: 0; padding: 14px; border-radius: 4px; background: var(--sof
 <!-- ===================================================== PROYECTO -->
 <main id="vista-proyecto" hidden>
   <div class="col">
-    <a class="volver" href="#proyectos">← Volver a los proyectos</a>
+    <a class="volver" id="volver" href="#proyectos">← Volver a los proyectos</a>
     <div class="det-head">
       <div class="meta" id="d-meta"></div>
       <h1 id="d-titulo"></h1>
       <p class="lead" id="d-resumen"></p>
     </div>
     <div class="det-texto">
-      <h2>El problema</h2><p id="d-problema"></p>
-      <h2>Lo que hice</h2><ul id="d-solucion"></ul>
-      <h2>Qué cambió</h2><ul id="d-resultado"></ul>
+      <p class="aviso" id="d-aviso" hidden>Proyecto personal con datos simulados. No es un trabajo del banco: lo hice para practicar el método y mostrar cómo lo aplico.</p>
+      <h2 id="d-h1">El problema</h2><p id="d-problema"></p>
+      <h2 id="d-h2">Lo que hice</h2><ul id="d-solucion"></ul>
+      <h2 id="d-h3">Qué cambió</h2><ul id="d-resultado"></ul>
       <p class="herramientas" id="d-tags"></p>
     </div>
   </div>
@@ -199,13 +251,13 @@ pre.codigo { margin: 0; padding: 14px; border-radius: 4px; background: var(--sof
     <div class="col"><h2 id="d-tablero-titulo"></h2><p class="meta" id="d-tablero-nota"></p></div>
     <div class="ancho"><div class="tablero-body" id="d-tablero"></div></div>
     <div class="col">
-      <p class="nota" style="margin-top:28px">Las cifras salen de los datos inventados del repositorio, procesados con la misma lógica de los scripts del proyecto.</p>
+      <p class="nota" id="d-pie" style="margin-top:28px"></p>
       <div class="siguiente"><a id="ant" href="#">←</a><span id="d-links"></span><a id="sig" href="#">→</a></div>
     </div>
   </div>
 </main>
 
-<div class="col"><footer class="meta">Hecho por Yara Arias con SQL Server, Python y un poco de JavaScript. Todos los datos de esta página son ficticios.</footer></div>
+<div class="col"><footer class="meta">Hecho por Yara Arias. La página se genera con Python a partir de los resultados de cada análisis. Todos los datos son ficticios o simulados.</footer></div>
 
 <script src="vendor/chart.umd.js"></script>
 <script>
@@ -214,6 +266,9 @@ const REPO = @@REPO@@;
 const LINKEDIN = @@LINKEDIN@@;
 const D = @@DATOS@@;
 const P = @@PROYECTOS@@;
+const X = @@EXPLORACIONES@@;   // proyectos personales de ciencia de datos
+const C = @@CIENCIA@@;         // resultados de analisis/ejecutar_todo.py
+const TODOS = P.concat(X);
 
 const fmt = (n, d = 0) => Number(n).toLocaleString("es-DO", { minimumFractionDigits: d, maximumFractionDigits: d });
 const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
@@ -222,14 +277,72 @@ const mesLargo = p => `${MESES[+p.slice(5) - 1]} de ${p.slice(0, 4)}`;
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-function pintarPortada() {
-  document.getElementById("lista-proyectos").innerHTML = P.map(x => `
-    <li><span class="n">${+x.id}.</span><div>
+/* ---------------------------------------------------------------- Portada */
+/* Miniatura de cada proyecto, dibujada con sus propios datos */
+function mini(vals, tipo = "linea") {
+  if (!vals || !vals.length) return "";
+  const w = 120, h = 40, lo = tipo === "barras" ? 0 : Math.min(...vals), hi = Math.max(...vals), r = hi - lo || 1;
+  const y = v => (h - 3 - (v - lo) / r * (h - 6)).toFixed(1);
+  if (tipo === "barras") {
+    const bw = w / vals.length;
+    return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true">${vals.map((v, i) => `<rect x="${(i * bw + 1).toFixed(1)}" y="${y(v)}" width="${(bw - 2).toFixed(1)}" height="${(h - 3 - y(v)).toFixed(1)}" rx="1.5" fill="currentColor"/>`).join("")}</svg>`;
+  }
+  const pts = vals.map((v, i) => `${(i / (vals.length - 1) * (w - 4) + 2).toFixed(1)},${y(v)}`).join(" ");
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
+}
+const suma = filas => filas[0].map((_, i) => filas.reduce((a, f) => a + f[i], 0));
+const MINIS = {
+  "01": () => mini(suma(D.p01.total)), "02": () => mini(D.p02.hist, "barras"), "03": () => mini(D.p03.pen_mes.slice(0, -1)),
+  "04": () => mini(suma(Object.values(D.p04.canal))), "05": () => mini(D.p05.sucursales.map(s => s.pen), "barras"),
+  "e1": () => mini(C.fuga.deciles.map(d => d.tasa), "barras"), "e2": () => mini(C.pronostico.ventas.slice(-24).concat(C.pronostico.pronostico.valor)),
+  "e3": () => mini(C.segmentos.siluetas.map(s => s[1])),
+};
+const item = (x, numerado) => `
+    <li data-areas="${esc(x.areas.join("|"))}">${numerado ? `<span class="n">${+x.id}.</span>` : ""}<div>
       <h3><a href="#proyecto-${x.id}">${x.titulo}</a></h3>
       <p>${x.lista}</p>
       <div class="meta">${x.tipo} · ${x.tags}</div>
-      <div class="accesos"><a href="#proyecto-${x.id}">Ver descripción y tablero →</a>${REPO ? `<a href="${REPO}/tree/main/${x.carpeta}">Código</a>` : ""}</div>
-    </div></li>`).join("");
+      <div class="accesos"><a href="#proyecto-${x.id}">${numerado ? "Ver descripción y tablero" : "Ver el análisis"}</a>${x.enlace_codigo ? `<a href="${x.enlace_codigo}">Código</a>` : ""}</div>
+    </div><a class="mini" href="#proyecto-${x.id}" tabindex="-1" aria-hidden="true">${MINIS[x.id] ? MINIS[x.id]() : ""}</a></li>`;
+
+function pintarPortada() {
+  document.getElementById("lista-proyectos").innerHTML = P.map(x => item(x, true)).join("");
+  document.getElementById("lista-exploraciones").innerHTML = X.map(x => item(x, false)).join("");
+  const areas = ["Todos", ...new Set(TODOS.flatMap(x => x.areas))], caja = document.getElementById("filtros");
+  caja.innerHTML = areas.map((a, i) => `<button type="button" aria-pressed="${i === 0}" data-area="${esc(a)}">${a}</button>`).join("");
+  caja.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    caja.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    for (const id of ["proyectos", "exploraciones"]) {
+      let visibles = 0;
+      document.querySelectorAll(`#lista-${id} li`).forEach(li => {
+        const ok = b.dataset.area === "Todos" || li.dataset.areas.split("|").includes(b.dataset.area);
+        li.hidden = !ok; visibles += ok;
+      });
+      document.getElementById(`vacio-${id}`).hidden = visibles > 0;
+    }
+  });
+}
+
+/* El mapa de la portada: clientes simulados en dos dimensiones, por segmento */
+let mapaPortada = null;
+function dibujarMapa(idLienzo, animar) {
+  const s = C.segmentos, f = { family: "Source Sans 3, system-ui, sans-serif", size: 12 };
+  return new Chart(document.getElementById(idLienzo), {
+    type: "scatter",
+    data: { datasets: s.grupos.map((g, i) => ({ label: g.nombre, data: s.puntos.filter(p => p[2] === i).map(p => ({ x: p[0], y: p[1] })),
+      backgroundColor: css(`--s${i + 1}`) + "cc", borderColor: css("--paper"), borderWidth: 1, pointRadius: 4, pointHoverRadius: 7 })) },
+    options: { responsive: true, maintainAspectRatio: false,
+      animation: animar && !matchMedia("(prefers-reduced-motion: reduce)").matches ? { duration: 900, easing: "easeOutCubic" } : false,
+      plugins: { legend: { display: false }, tooltip: { backgroundColor: css("--ink"), titleColor: css("--paper"), bodyColor: css("--paper"), padding: 10, titleFont: f, bodyFont: f, displayColors: false,
+        callbacks: { title: it => it[0].dataset.label, label: it => { const g = s.grupos[it.datasetIndex]; return [`${fmt(g.pct, 1)} % de los clientes`, `Fuga: ${fmt(g.fuga, 1)} %`]; } } } },
+      scales: { x: { display: false }, y: { display: false } } },
+  });
+}
+function pintarMapa(animar) {
+  if (mapaPortada) mapaPortada.destroy();
+  document.getElementById("mapa-leyenda").innerHTML = C.segmentos.grupos.map((g, i) => `<li><i style="--c:var(--s${i + 1})"></i>${g.nombre} · ${fmt(g.pct, 0)} %</li>`).join("");
+  mapaPortada = dibujarMapa("mapa", animar);
 }
 
 /* ---------------------------------------------------------------- Utilidades */
@@ -461,13 +574,91 @@ $ python reporte_mensual.py --modo sql --enviar
     el.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => mostrar(+b.dataset.i)));
     mostrar(0);
   },
+
+  "e1"(el) {
+    const r = C.fuga, mejor = r.comparacion.find(c => c.modelo === r.mejor), reglas = r.comparacion[0], d1 = r.deciles[0], base = r.tasa_fuga;
+    el.innerHTML = `<div class="col">${cifras([
+        ["clientes simulados", fmt(r.clientes), `${fmt(r.prueba)} reservados para la prueba`],
+        ["se fueron", fmt(base, 1) + " %"],
+        ["AUC del mejor modelo", fmt(mejor.auc, 3), `reglas a mano: ${fmt(reglas.auc, 3)}`, "up"],
+        ["de la fuga está en el 20 % de mayor riesgo", fmt(mejor.captura_top20, 1) + " %", `con las reglas: ${fmt(reglas.captura_top20, 1)} %`, "up"],
+      ])}</div>
+      <div class="dos">
+        ${fig(`Los modelos entrenados ordenan mejor que las reglas, y gana el más simple`, "Curva ROC sobre los clientes de prueba. Mientras más arriba a la izquierda, mejor; la diagonal es adivinar", lienzo("ge1a", true, "Curvas ROC de los tres modelos"))}
+        ${fig(`En el 10 % de mayor riesgo se va ${fmt(d1.tasa, 1)} %: ${fmt(d1.lift, 1)} veces el promedio`, `Tasa de fuga real por decil de riesgo, según ${r.mejor.toLowerCase()}. El decil 1 es el de mayor riesgo`, lienzo("ge1b", true, "Tasa de fuga por decil"))}
+      </div>
+      <div class="dos">
+        ${fig(`«${r.importancia[0][0]}» es la señal más fuerte`, "Cuánto baja el AUC si se desordena cada variable (importancia por permutación)", lienzo("ge1c", false, "Importancia de las variables"))}
+        ${fig("Los tres, lado a lado", "Mismos clientes de prueba para todos",
+          tabla([["Modelo", "izq"], ["AUC"], ["Precisión media"], ["Fuga en el 20 % superior"]],
+            r.comparacion.map(c => `<tr><td class="izq">${c.modelo === r.mejor ? `<strong>${c.modelo}</strong>` : c.modelo}</td><td>${fmt(c.auc, 3)}</td><td>${fmt(c.precision_media, 3)}</td><td>${fmt(c.captura_top20, 1)} %</td></tr>`)))}
+      </div>`;
+    const o = opc(); o.interaction = { mode: "nearest", intersect: false };
+    o.scales.x = { ...o.scales.x, type: "linear", min: 0, max: 1, title: { display: true, text: "Falsos positivos", color: css("--muted") } };
+    o.scales.y = { ...o.scales.y, min: 0, max: 1, title: { display: true, text: "Fugas detectadas", color: css("--muted") } };
+    grafico("ge1a", { type: "line", data: { datasets: [
+        ...Object.entries(r.roc).map(([m, pts], i) => ({ label: m, data: pts.map(p => ({ x: p[0], y: p[1] })), ...linea(serie(i)) })),
+        { label: "Adivinar", data: [{ x: 0, y: 0 }, { x: 1, y: 1 }], borderColor: css("--muted"), borderDash: [4, 4], borderWidth: 1, pointRadius: 0 }] }, options: o });
+    const ob = opc({ sinLeyenda: true }); ob.scales.y.ticks.callback = v => v + " %";
+    grafico("ge1b", { type: "bar", data: { labels: r.deciles.map(d => d.decil), datasets: [{ label: "Tasa de fuga (%)", data: r.deciles.map(d => d.tasa), ...barra(serie(0)) }] }, options: ob });
+    grafico("ge1c", { type: "bar", data: { labels: r.importancia.map(f => f[0]), datasets: [{ label: "Caída del AUC", data: r.importancia.map(f => f[1]), ...barraH(serie(0)) }] }, options: opc({ sinLeyenda: true, horizontal: true }) });
+  },
+
+  "e2"(el) {
+    const r = C.pronostico, pr = r.prueba, f = r.pronostico, n = 24, hist = r.ventas.slice(-n), mh = r.meses.slice(-n);
+    const crece = 100 * (r.total_6m / r.total_6m_anterior - 1), ancho1 = f.alto[0] - f.bajo[0], ancho6 = f.alto.at(-1) - f.bajo.at(-1);
+    el.innerHTML = `<div class="col">${cifras([
+        ["RD$ proyectados en 6 meses", fmt(r.total_6m, 1) + " M", `${crece >= 0 ? "+" : ""}${fmt(crece, 1)} % contra los mismos meses un año antes`, crece >= 0 ? "up" : "down"],
+        ["error del modelo en el año de prueba", fmt(pr.mape_modelo, 1) + " %", "error porcentual medio (MAPE)"],
+        ["error de «lo mismo que el año pasado»", fmt(pr.mape_ingenuo, 1) + " %"],
+      ])}</div>
+      <div class="col">${fig(`El pico de diciembre se repite y el rango se abre de ±${fmt(ancho1 / 2, 2)} a ±${fmt(ancho6 / 2, 2)} millones`, "Ventas mensuales en millones de RD$: dos años de historia y la proyección punteada, con su rango del 80 %", lienzo("ge2a", true, "Historia y pronóstico de ventas"))}</div>
+      <div class="col">${fig(`En el año que no había visto, el modelo se equivocó ${fmt(pr.mape_modelo, 1)} % en promedio`, "Entrenado con 36 meses y comparado contra los 12 siguientes", lienzo("ge2b", false, "Prueba hacia atrás"))}
+      <p class="nota" style="margin-top:14px">Un error tan bajo es propio de datos simulados, que no tienen feriados movidos, campañas ni cambios de precio. Lo que sí se sostiene con datos reales es el método: probar hacia atrás y comparar siempre contra una regla simple.</p></div>`;
+    const et = [...mh, ...f.meses].map(mesCorto), vacio = k => Array(k).fill(null), ult = hist.at(-1);
+    const o = opc(); o.scales.y = { ...o.scales.y, beginAtZero: false, ticks: { ...o.scales.y.ticks, callback: v => v + " M" } };
+    o.plugins.legend.labels.filter = it => it.text !== "_";
+    grafico("ge2a", { type: "line", data: { labels: et, datasets: [
+        { label: "_", data: [...vacio(n - 1), ult, ...f.bajo], borderWidth: 0, pointRadius: 0, pointHoverRadius: 0, fill: false },
+        { label: "Rango del 80 %", data: [...vacio(n - 1), ult, ...f.alto], borderWidth: 0, pointRadius: 0, pointHoverRadius: 0, backgroundColor: serie(0) + "33", fill: "-1" },
+        { label: "Ventas", data: [...hist, ...vacio(f.valor.length)], ...linea(serie(0)) },
+        { label: "Pronóstico", data: [...vacio(n - 1), ult, ...f.valor], ...linea(serie(0)), borderDash: [6, 4] }] }, options: o });
+    const o2 = opc(); o2.scales.y = { ...o2.scales.y, beginAtZero: false, ticks: { ...o2.scales.y.ticks, callback: v => v + " M" } };
+    grafico("ge2b", { type: "line", data: { labels: pr.meses.map(mesCorto), datasets: [{ label: "Real", data: pr.real, ...linea(serie(0)) }, { label: "Modelo", data: pr.modelo, ...linea(serie(1)), borderDash: [6, 4] }] }, options: o2 });
+  },
+
+  "e3"(el) {
+    const r = C.segmentos, riesgo = [...r.grupos].sort((a, b) => b.fuga - a.fuga)[0], mejorSil = Math.max(...r.siluetas.map(s => s[1]));
+    const empate = r.siluetas.filter(s => s[1] === mejorSil).map(s => s[0]);
+    el.innerHTML = `<div class="col">${cifras([
+        ["clientes simulados", fmt(r.clientes)], ["grupos encontrados", r.k],
+        [`de fuga en «${riesgo.nombre.toLowerCase()}»`, fmt(riesgo.fuga, 1) + " %", `${fmt(riesgo.pct, 1)} % de los clientes`, "down"],
+      ])}</div>
+      <div class="dos">
+        ${fig("Los grupos se separan bien, con algo de mezcla en los bordes", `Proyección a dos dimensiones, que conserva ${fmt(r.varianza_2d, 0)} % de la variación. Los ejes no tienen unidad`,
+          `<ul class="leyenda">${r.grupos.map((g, i) => `<li><i style="--c:var(--s${i + 1})"></i>${g.nombre}</li>`).join("")}</ul>` + lienzo("ge3a", true, "Mapa de clientes por grupo"))}
+        ${fig(empate.length > 1 ? `Con ${empate.join(" y ")} grupos la separación es igual de buena; me quedo con ${r.k} por ser más simple` : `La mejor separación se logra con ${r.k} grupos`, "Coeficiente de silueta para cada cantidad de grupos (más alto es mejor)", lienzo("ge3b", true, "Silueta por número de grupos"))}
+      </div>
+      <div class="col">${fig(`«${riesgo.nombre}» tiene poco saldo, casi no usa canales digitales y es donde está la fuga`, "Promedios de cada grupo",
+        tabla([["Grupo", "izq"], ["Clientes"], ["Antigüedad (meses)"], ["Productos"], ["Saldo (RD$)"], ["Uso digital al mes"], ["Días sin actividad"], ["Fuga"]],
+          r.grupos.map((g, i) => `<tr><td class="izq"><span class="chip" style="--c:var(--s${i + 1})">${g.nombre}</span></td><td>${fmt(g.pct, 1)} %</td><td>${g.antiguedad}</td><td>${fmt(g.productos, 1)}</td><td>${fmt(g.saldo)}</td><td>${fmt(g.digital, 1)}</td><td>${g.inactividad}</td><td>${fmt(g.fuga, 1)} %</td></tr>`)))}</div>`;
+    graficos.push(dibujarMapa("ge3a", false));
+    const o = opc({ sinLeyenda: true }); o.scales.y = { ...o.scales.y, beginAtZero: false };
+    o.scales.x = { ...o.scales.x, title: { display: true, text: "Cantidad de grupos", color: css("--muted") } };
+    grafico("ge3b", { type: "line", data: { labels: r.siluetas.map(s => s[0]), datasets: [{ label: "Silueta", data: r.siluetas.map(s => s[1]), ...linea(serie(0)), pointRadius: 4, pointBackgroundColor: r.siluetas.map(s => s[0] === r.k ? serie(1) : serie(0)) }] }, options: o });
+  },
 };
 
 /* ---------------------------------------------------------------- Vista de proyecto */
 function abrirProyecto(id) {
-  const i = P.findIndex(x => x.id === id), x = P[i];
+  const i = TODOS.findIndex(x => x.id === id), x = TODOS[i], personal = X.includes(x);
   limpiarGraficos();
-  document.getElementById("d-meta").textContent = `Proyecto ${+x.id} de ${P.length} · ${x.tipo}`;
+  document.getElementById("d-meta").textContent = personal ? `Exploración ${X.indexOf(x) + 1} de ${X.length} · ${x.tipo}` : `Proyecto ${+x.id} de ${P.length} · ${x.tipo}`;
+  document.getElementById("d-aviso").hidden = !personal;
+  (x.encabezados || ["El problema", "Lo que hice", "Qué cambió"]).forEach((h, j) => { document.getElementById(`d-h${j + 1}`).textContent = h; });
+  document.getElementById("d-pie").textContent = personal
+    ? "Las cifras salen de ejecutar el script del análisis sobre los datos simulados del repositorio."
+    : "Las cifras salen de los datos inventados del repositorio, procesados con la misma lógica de los scripts del proyecto.";
   document.getElementById("d-titulo").textContent = x.titulo;
   document.getElementById("d-resumen").textContent = x.resumen;
   document.getElementById("d-problema").textContent = x.problema;
@@ -475,11 +666,11 @@ function abrirProyecto(id) {
   document.getElementById("d-resultado").innerHTML = x.resultado.map(s => `<li>${s}</li>`).join("");
   document.getElementById("d-tags").textContent = "Herramientas: " + x.tags + ".";
   document.getElementById("d-tablero-titulo").textContent = x.tablero;
-  document.getElementById("d-tablero-nota").textContent = ["06", "07", "08"].includes(id) ? "" : `Datos ficticios, con corte al ${D.corte}.`;
-  const ant = P[(i + P.length - 1) % P.length], sig = P[(i + 1) % P.length];
+  document.getElementById("d-tablero-nota").textContent = personal ? "Datos simulados." : ["06", "07", "08"].includes(id) ? "" : `Datos ficticios, con corte al ${D.corte}.`;
+  const ant = TODOS[(i + TODOS.length - 1) % TODOS.length], sig = TODOS[(i + 1) % TODOS.length];
   Object.assign(document.getElementById("ant"), { href: `#proyecto-${ant.id}`, textContent: `← ${ant.titulo}` });
   Object.assign(document.getElementById("sig"), { href: `#proyecto-${sig.id}`, textContent: `${sig.titulo} →` });
-  document.getElementById("d-links").innerHTML = REPO ? `<a href="${REPO}/tree/main/${x.carpeta}">Ver el código</a>` : "";
+  document.getElementById("d-links").innerHTML = x.enlace_codigo ? `<a href="${x.enlace_codigo}">Ver el código</a>` : "";
   document.title = `${x.titulo} · Yara Arias`;
   const cont = document.getElementById("d-tablero");
   try { TABLEROS[id](cont); }
@@ -488,9 +679,9 @@ function abrirProyecto(id) {
 
 let actual = null;
 function enrutar() {
-  const h = location.hash.slice(1), m = /^proyecto-(\d\d)$/.exec(h);
+  const h = location.hash.slice(1), m = /^proyecto-([a-z0-9]+)$/.exec(h);
   const inicio = document.getElementById("vista-inicio"), det = document.getElementById("vista-proyecto");
-  if (m && P.some(x => x.id === m[1])) {
+  if (m && TODOS.some(x => x.id === m[1])) {
     inicio.hidden = true; det.hidden = false;
     if (actual !== m[1]) { actual = m[1]; abrirProyecto(m[1]); }
     window.scrollTo(0, 0);
@@ -498,13 +689,20 @@ function enrutar() {
     if (det.hidden) return;
     const venia = actual; actual = null; limpiarGraficos();
     det.hidden = true; inicio.hidden = false; document.title = "Yara Arias · Portafolio BI";
+    pintarMapa(false);
     const destino = h && document.getElementById(h);
-    if (destino) destino.scrollIntoView(); else if (venia) document.getElementById("proyectos").scrollIntoView();
+    if (destino) destino.scrollIntoView(); else if (venia) document.getElementById(X.some(x => x.id === venia) ? "exploraciones" : "proyectos").scrollIntoView();
   }
 }
 
 /* ---------------------------------------------------------------- Arranque */
 pintarPortada();
+if (!document.getElementById("vista-inicio").hidden && !/^#proyecto-/.test(location.hash)) pintarMapa(true);
+const botonTema = document.getElementById("tema");
+const oscuro = () => document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+const rotular = () => { botonTema.textContent = oscuro() ? "Modo claro" : "Modo oscuro"; };
+botonTema.addEventListener("click", () => { document.documentElement.dataset.theme = oscuro() ? "light" : "dark"; rotular(); });
+rotular();
 if (REPO) { ["github-dt", "github-dd"].forEach(i => document.getElementById(i).hidden = false); document.getElementById("github-link").href = REPO; }
 if (LINKEDIN) { ["linkedin-dt", "linkedin-dd"].forEach(i => document.getElementById(i).hidden = false); document.getElementById("linkedin-link").href = LINKEDIN; }
 document.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", async () => {
@@ -513,7 +711,7 @@ document.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click"
 }));
 window.addEventListener("hashchange", enrutar);
 enrutar();
-const redibujar = () => { if (actual) { const id = actual; actual = null; abrirProyecto(id); actual = id; } };
+const redibujar = () => { if (actual) { const id = actual; actual = null; abrirProyecto(id); actual = id; } else pintarMapa(false); };
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", redibujar);
 new MutationObserver(redibujar).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 </script>
