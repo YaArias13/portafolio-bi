@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yara Arias · Portafolio BI</title>
+<meta name="description" content="Portafolio de Yara Arias: SQL Server, Power BI, Excel y Python. Tableros, automatización de reportes y procesos de datos.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Una página personal, no una landing: columna de lectura, serif para el texto,
+   sans para datos y tablas, un solo color de tinta y un resaltador. */
+:root {
+  --paper: #FCFCFA; --ink: #1E2124; --muted: #60656B; --rule: #E2E2DC; --soft: #F3F3EF;
+  --accent: #1B5E6B; --mark: #FBEA9E; --up: #2E7D4F; --down: #B23A2E;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300;
+  --good: #0ca30c; --warn: #fab219; --crit: #d03b3b;
+  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #17191B; --ink: #E7E6E1; --muted: #A2A5A8; --rule: #33363A; --soft: #202326;
+    --accent: #7FC3CF; --mark: #5B4E17; --up: #6CC496; --down: #F0897D;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #17191B; --ink: #E7E6E1; --muted: #A2A5A8; --rule: #33363A; --soft: #202326;
+  --accent: #7FC3CF; --mark: #5B4E17; --up: #6CC496; --down: #F0897D;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 1.09rem/1.65 var(--serif); }
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+[hidden] { display: none !important; }
+.col { max-width: 680px; margin: 0 auto; padding: 0 20px; }
+.ancho { max-width: 1060px; margin: 0 auto; padding: 0 20px; }
+mark { background: linear-gradient(transparent 55%, var(--mark) 55%); color: inherit; padding: 0 2px; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 700; text-wrap: balance; letter-spacing: -.005em; }
+small, .meta { font: 400 .86rem/1.5 var(--sans); color: var(--muted); }
+
+/* ---------- Cabecera ---------- */
+.top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 26px 0 0; font: 500 .95rem/1.4 var(--sans); }
+.top a { color: var(--ink); text-decoration: none; }
+.top nav { display: flex; gap: 18px; flex-wrap: wrap; }
+.top nav a { color: var(--muted); }
+.top nav a:hover { color: var(--ink); }
+
+/* ---------- Portada ---------- */
+.intro { padding: 64px 0 40px; }
+.intro h1 { font-size: clamp(2rem, 4.4vw, 2.7rem); line-height: 1.15; margin: 0 0 22px; }
+.intro p { margin: 0 0 16px; }
+section.sec { padding: 36px 0; }
+section.sec > h2, .col > h2 { font-size: 1.5rem; margin: 0 0 6px; }
+.sec-lead { color: var(--muted); margin: 0 0 22px; }
+
+.proyectos { list-style: none; margin: 0; padding: 0; counter-reset: p; }
+.proyectos li { padding: 18px 0; border-top: 1px solid var(--rule); display: grid; grid-template-columns: 2.2rem minmax(0, 1fr); }
+.proyectos li:last-child { border-bottom: 1px solid var(--rule); }
+.proyectos .n { font: 400 .95rem/1.9 var(--sans); color: var(--muted); }
+.proyectos h3 { font-size: 1.18rem; margin: 0; line-height: 1.35; }
+.proyectos h3 a { color: var(--ink); text-decoration: none; }
+.proyectos h3 a:hover { color: var(--accent); text-decoration: underline; }
+.proyectos p { margin: 4px 0 6px; }
+.proyectos .accesos { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 6px; font: 600 .95rem/1.4 var(--sans); }
+
+.prosa p { margin: 0 0 14px; }
+.prosa code, code { font: 400 .86em/1 ui-monospace, "Cascadia Mono", Consolas, monospace; background: var(--soft); padding: 2px 5px; border-radius: 3px; }
+.contacto dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 18px; margin: 0; font-family: var(--sans); }
+.contacto dt { color: var(--muted); }
+.contacto dd { margin: 0; }
+.btn { font: 500 .8rem/1 var(--sans); padding: 5px 9px; border: 1px solid var(--rule); background: transparent; color: var(--ink); border-radius: 4px; cursor: pointer; margin-left: 8px; }
+.btn:hover { border-color: var(--accent); }
+footer { padding: 40px 0 56px; }
+
+/* ---------- Proyecto ---------- */
+.volver { display: inline-block; margin: 36px 0 26px; font: 500 .95rem var(--sans); }
+.det-head h1 { font-size: clamp(1.9rem, 4vw, 2.5rem); line-height: 1.15; margin: 4px 0 16px; }
+.det-head .meta { font-size: .92rem; }
+.det-head .lead { font-size: 1.2rem; line-height: 1.55; margin: 0 0 8px; }
+.det-texto h2 { font-size: 1.2rem; margin: 30px 0 8px; }
+.det-texto p { margin: 0 0 12px; }
+.det-texto ul { margin: 0 0 12px; padding-left: 22px; }
+.det-texto li { margin-bottom: 6px; }
+.det-texto .herramientas { font: 400 .95rem/1.6 var(--sans); color: var(--muted); }
+
+.tablero { margin: 44px auto 0; padding-top: 30px; border-top: 1px solid var(--rule); }
+.tablero > .col > h2 { font-size: 1.5rem; margin: 0 0 4px; }
+.tablero-body { display: grid; gap: 34px; margin-top: 26px; }
+.cifras { display: flex; flex-wrap: wrap; gap: 14px 40px; font-family: var(--sans); padding: 4px 0 2px; }
+.cifra .v { font: 600 1.85rem/1.1 var(--sans); font-variant-numeric: tabular-nums; }
+.cifra .et { font-size: .9rem; color: var(--muted); }
+.cifra .d { font-size: .82rem; color: var(--muted); }
+.cifra .d.up { color: var(--up); } .cifra .d.down { color: var(--down); }
+.dos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 34px 40px; }
+.fig h3 { font-size: 1.06rem; line-height: 1.4; margin: 0 0 2px; }
+.fig .meta { margin: 0 0 10px; }
+.lienzo { position: relative; height: 260px; }
+.lienzo.alto { height: 360px; }
+.scroll { overflow-x: auto; }
+table.datos { border-collapse: collapse; width: 100%; font: 400 .92rem/1.35 var(--sans); font-variant-numeric: tabular-nums; }
+table.datos th, table.datos td { padding: 7px 10px 7px 0; border-bottom: 1px solid var(--rule); text-align: right; white-space: nowrap; }
+table.datos thead th { font-weight: 600; color: var(--muted); font-size: .82rem; border-bottom: 1px solid var(--ink); }
+table.datos .izq { text-align: left; }
+table.datos td.wrap { white-space: normal; text-align: left; min-width: 260px; color: var(--muted); }
+table.datos tbody tr:hover > * { background: var(--soft); }
+.barra { display: inline-block; height: 7px; border-radius: 0 3px 3px 0; background: var(--s1); vertical-align: middle; margin-right: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font: 400 .86rem/1 var(--sans); }
+.chip::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--muted)); }
+.chip.good { --c: var(--good); } .chip.warn { --c: var(--warn); } .chip.crit { --c: var(--crit); }
+.nota { font: italic 400 .98rem/1.55 var(--serif); color: var(--muted); margin: 0; }
+ol.pasos { margin: 0; padding-left: 22px; font-family: var(--serif); }
+ol.pasos li { margin-bottom: 8px; }
+pre.codigo { margin: 0; padding: 14px; border-radius: 4px; background: var(--soft); overflow-x: auto; font: 400 .8rem/1.55 ui-monospace, "Cascadia Mono", Consolas, monospace; color: var(--ink); max-height: 380px; }
+.tabs { display: flex; gap: 4px 14px; flex-wrap: wrap; margin-bottom: 10px; font-family: var(--sans); }
+.tabs button { font: 500 .9rem/1.4 var(--sans); padding: 2px 0; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--muted); cursor: pointer; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.siguiente { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--rule); font: 500 .95rem/1.4 var(--sans); }
+
+@media (max-width: 760px) {
+  .dos { grid-template-columns: 1fr; }
+  body { font-size: 1.03rem; }
+}
+</style>
+</head>
+<body>
+<div class="col">
+  <header class="top">
+    <a href="#inicio">Yara Arias</a>
+    <nav aria-label="Secciones"><a href="#proyectos">Proyectos</a><a href="#como-trabajo">Cómo trabajo</a><a href="#contacto">Contacto</a></nav>
+  </header>
+</div>
+
+<!-- ===================================================== PORTADA -->
+<main id="vista-inicio">
+  <div class="col">
+    <div class="intro" id="inicio">
+      <h1>Hola, soy Yara. Trabajo con datos en banca, en Santo Domingo.</h1>
+      <p>Mi día a día es SQL Server, Power BI y Excel, con Python para automatizar lo que se repite. Hago <mark>tableros para tomar decisiones</mark>, procesos que cargan y validan la información de cada cierre, y reportes para que las áreas de negocio vendan mejor.</p>
+      <p>Aquí reuní algunos de esos trabajos. Como son de un banco, cambié los nombres de las tablas y usé datos inventados, pero la lógica es la misma que uso en producción. Cada proyecto tiene su propia página con lo que resolví y un tablero con los resultados: entra desde «Ver descripción y tablero».</p>
+    </div>
+
+    <section class="sec" id="proyectos">
+      <h2>Proyectos</h2>
+      <p class="sec-lead">Ordenados más o menos como fueron llegando.</p>
+      <ol class="proyectos" id="lista-proyectos"></ol>
+    </section>
+
+    <section class="sec prosa" id="como-trabajo">
+      <h2>Cómo trabajo</h2>
+      <p>Antes de publicar una cifra, reviso que las fuentes estén completas. Por eso casi todos mis procesos empiezan con un validador que deja un log y avisa por correo cuando algo no llegó.</p>
+      <p>Me importa que las consultas corran rápido. Uso filtros de fecha que aprovechan los índices (<code>fecha &gt;= @ini AND fecha &lt; @fin</code> en lugar de <code>FORMAT()</code>), guardo los pasos intermedios en tablas temporales indexadas y hago las cargas por período para poder repetirlas sin duplicar datos.</p>
+      <p>En Power BI armo modelos estrella y calculo los porcentajes con los totales, nunca promediando porcentajes. Y siempre trato de que cada número del tablero se pueda rastrear hasta la consulta que lo generó.</p>
+    </section>
+
+    <section class="sec prosa" id="pymes">
+      <h2>Para pequeñas y medianas empresas</h2>
+      <p>También ayudo a pymes en República Dominicana que quieren ver sus números con claridad: un tablero de ventas o cobros que se actualice solo, el reporte de Excel que hoy toma horas convertido en un archivo que llega al correo, o simplemente ordenar la información que está repartida en varios archivos. Si es tu caso, escríbeme.</p>
+    </section>
+
+    <section class="sec contacto" id="contacto">
+      <h2>Contacto</h2>
+      <p class="sec-lead">Para una vacante de BI o análisis de datos (presencial o remota) o para un proyecto.</p>
+      <dl>
+        <dt>Correo</dt><dd>yaraysaarias@gmail.com <button class="btn" type="button" data-copy="yaraysaarias@gmail.com">Copiar</button></dd>
+        <dt>WhatsApp</dt><dd><a href="https://wa.me/18099947978">809-994-7978</a></dd>
+        <dt id="linkedin-dt" hidden>LinkedIn</dt><dd id="linkedin-dd" hidden><a id="linkedin-link" href="#contacto">Perfil</a></dd>
+        <dt id="github-dt" hidden>GitHub</dt><dd id="github-dd" hidden><a id="github-link" href="#proyectos">Repositorio con el código</a></dd>
+      </dl>
+    </section>
+  </div>
+</main>
+
+<!-- ===================================================== PROYECTO -->
+<main id="vista-proyecto" hidden>
+  <div class="col">
+    <a class="volver" href="#proyectos">← Volver a los proyectos</a>
+    <div class="det-head">
+      <div class="meta" id="d-meta"></div>
+      <h1 id="d-titulo"></h1>
+      <p class="lead" id="d-resumen"></p>
+    </div>
+    <div class="det-texto">
+      <h2>El problema</h2><p id="d-problema"></p>
+      <h2>Lo que hice</h2><ul id="d-solucion"></ul>
+      <h2>Qué cambió</h2><ul id="d-resultado"></ul>
+      <p class="herramientas" id="d-tags"></p>
+    </div>
+  </div>
+  <div class="tablero">
+    <div class="col"><h2 id="d-tablero-titulo"></h2><p class="meta" id="d-tablero-nota"></p></div>
+    <div class="ancho"><div class="tablero-body" id="d-tablero"></div></div>
+    <div class="col">
+      <p class="nota" style="margin-top:28px">Las cifras salen de los datos inventados del repositorio, procesados con la misma lógica de los scripts del proyecto.</p>
+      <div class="siguiente"><a id="ant" href="#">←</a><span id="d-links"></span><a id="sig" href="#">→</a></div>
+    </div>
+  </div>
+</main>
+
+<div class="col"><footer class="meta">Hecho por Yara Arias con SQL Server, Python y un poco de JavaScript. Todos los datos de esta página son ficticios.</footer></div>
+
+<script src="vendor/chart.umd.js"></script>
+<script>
+/* Estos valores los inserta build.py desde config.json y la carpeta datos/ */
+const REPO = "";
+const LINKEDIN = "";
+const D = {"corte": "2026-10-31", "p01": {"periodos": ["2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09", "2026-10"], "familias": ["Préstamos", "Cuentas", "Tarjeta de crédito", "Tarjeta de débito", "Seguros", "Banca digital"], "total": [[592, 620, 660, 690, 723, 759, 787, 807, 845, 886, 914, 934], [671, 711, 743, 780, 824, 871, 921, 949, 995, 1037, 1073, 1106], [522, 563, 597, 614, 650, 675, 720, 753, 780, 818, 843, 862], [714, 750, 792, 835, 898, 929, 986, 1034, 1080, 1132, 1180, 1216], [574, 625, 656, 678, 701, 746, 774, 799, 826, 861, 893, 923], [380, 403, 423, 451, 466, 486, 510, 536, 559, 581, 606, 633]], "nuevos": [258, 278, 274, 236, 281, 267, 301, 249, 271, 299, 275, 245], "decrec": [44, 59, 75, 59, 67, 63, 69, 69, 64, 69, 81, 80], "kpi": {"total": 5674, "nuevos": 245, "decrec": 80, "crec": 165, "cumpl": 77.8}, "sucursales": [{"sucursal": "Piantini", "zona": "Metropolitana", "nuevos": 28, "meta": 26, "cumpl": 107.7}, {"sucursal": "Baní", "zona": "Sur", "nuevos": 25, "meta": 24, "cumpl": 104.2}, {"sucursal": "Centro", "zona": "Metropolitana", "nuevos": 24, "meta": 26, "cumpl": 92.3}, {"sucursal": "Megacentro", "zona": "Metropolitana", "nuevos": 19, "meta": 22, "cumpl": 86.4}, {"sucursal": "Santiago Centro", "zona": "Norte", "nuevos": 20, "meta": 24, "cumpl": 83.3}, {"sucursal": "Herrera", "zona": "Metropolitana", "nuevos": 19, "meta": 23, "cumpl": 82.6}, {"sucursal": "La Vega", "zona": "Norte", "nuevos": 19, "meta": 23, "cumpl": 82.6}, {"sucursal": "San Cristóbal", "zona": "Sur", "nuevos": 17, "meta": 22, "cumpl": 77.3}, {"sucursal": "Puerto Plata", "zona": "Norte", "nuevos": 17, "meta": 26, "cumpl": 65.4}, {"sucursal": "Punta Cana", "zona": "Este", "nuevos": 15, "meta": 23, "cumpl": 65.2}, {"sucursal": "Naco", "zona": "Metropolitana", "nuevos": 14, "meta": 24, "cumpl": 58.3}, {"sucursal": "Los Prados", "zona": "Metropolitana", "nuevos": 15, "meta": 27, "cumpl": 55.6}, {"sucursal": "La Romana", "zona": "Este", "nuevos": 13, "meta": 25, "cumpl": 52.0}]}, "p02": {"niveles": ["Alto", "Medio", "Bajo"], "dist": {"CHURN": [429, 970, 832], "REACTIVACION": [14, 51, 35]}, "hist": [135, 170, 299, 402, 416, 380, 343, 42, 28, 16], "factores": [["Sin banca en línea", 426], ["Poco uso digital", 418], ["Baja vinculación", 408], ["Segmento masivo", 256], ["Sin compras en 12 meses", 207], ["Cliente nuevo", 179], ["Canceló en últimos 6 meses", 146]], "kpi": {"clientes": 2331, "activos": 2231, "riesgo_alto": 429, "recientes": 39, "reac_alto": 14}, "top": [{"cliente_id": 41, "segmento": "MASIVO", "score": 90, "factores": "Baja vinculación (+25); Canceló en últimos 6 meses (+25); Poco uso digital (+20); Cliente nuevo (+10); Segmento masivo (+5); Sin banca en línea (+5)"}, {"cliente_id": 338, "segmento": "MASIVO", "score": 90, "factores": "Baja vinculación (+25); Canceló en últimos 6 meses (+25); Poco uso digital (+20); Sin compras en 12 meses (+10); Segmento masivo (+5); Sin banca en línea (+5)"}, {"cliente_id": 372, "segmento": "MASIVO", "score": 90, "factores": "Baja vinculación (+25); Canceló en últimos 6 meses (+25); Poco uso digital (+20); Sin compras en 12 meses (+10); Segmento masivo (+5); Sin banca en línea (+5)"}, {"cliente_id": 571, "segmento": "MASIVO", "score": 90, "factores": "Baja vinculación (+25); Canceló en últimos 6 meses (+25); Poco uso digital (+20); Sin compras en 12 meses (+10); Segmento masivo (+5); Sin banca en línea (+5)"}, {"cliente_id": 574, "segmento": "MASIVO", "score": 90, "factores": "Baja vinculación (+25); Canceló en últimos 6 meses (+25); Poco uso digital (+20); Sin compras en 12 meses (+10); Segmento masivo (+5); Sin banca en línea (+5)"}, {"cliente_id": 708, "segmento": "MASIVO", "score": 90, "factores": "Baja vinculación (+25); Canceló en últimos 6 meses (+25); Poco uso digital (+20); Sin compras en 12 meses (+10); Segmento masivo (+5); Sin banca en línea (+5)"}, {"cliente_id": 799, "segmento": "MASIVO", "score": 90, "factores": "Baja vinculación (+25); Canceló en últimos 6 meses (+25); Poco uso digital (+20); Sin compras en 12 meses (+10); Segmento masivo (+5); Sin banca en línea (+5)"}, {"cliente_id": 914, "segmento": "MASIVO", "score": 90, "factores": "Baja vinculación (+25); Canceló en últimos 6 meses (+25); Poco uso digital (+20); Cliente nuevo (+10); Segmento masivo (+5); Sin banca en línea (+5)"}]}, "p03": {"periodos": ["2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09", "2026-10"], "pen_mes": [50.0, 64.1, 56.9, 53.7, 63.0, 67.4, 65.1, 54.3, 49.0, 58.9, 60.5, 28.1], "pen_prod": [["TDC", 22.6], ["Seg. vida", 12.1], ["Banca en línea", 11.5], ["Ahorro", 11.3], ["Seg. desempleo", 10.4], ["Seg. incendio", 9.8], ["Corriente", 9.2], ["TDD", 7.3]], "por_madre": [["Comercial", 63.5, 85], ["Hipotecario", 57.1, 49], ["Consumo", 54.9, 304], ["Vehículo", 54.8, 93]], "ranking": [{"codigo": "COL0029", "cargo": "Ejecutivo de Negocios", "aperturas": 14, "pen": 85.7, "prod": 1.71}, {"codigo": "COL0053", "cargo": "Asesor Pyme", "aperturas": 11, "pen": 81.8, "prod": 1.73}, {"codigo": "COL0028", "cargo": "Asesor Pyme", "aperturas": 16, "pen": 75.0, "prod": 1.44}, {"codigo": "COL0039", "cargo": "Gerente de Sucursal", "aperturas": 9, "pen": 66.7, "prod": 1.44}, {"codigo": "COL0049", "cargo": "Asesor Pyme", "aperturas": 9, "pen": 66.7, "prod": 1.0}, {"codigo": "COL0016", "cargo": "Representante de Servicio", "aperturas": 16, "pen": 62.5, "prod": 1.06}, {"codigo": "COL0015", "cargo": "Gerente de Sucursal", "aperturas": 8, "pen": 62.5, "prod": 1.38}, {"codigo": "COL0035", "cargo": "Ejecutivo de Negocios", "aperturas": 12, "pen": 58.3, "prod": 1.08}], "kpi": {"aperturas": 531, "pen": 56.5, "prod_ap": 0.99, "ult": 28.1, "ant": 60.5}}, "p04": {"periodos": ["2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09", "2026-10"], "canal": {"PRESENCIAL": [1.23, 1.22, 1.32, 1.17, 1.35, 1.44, 1.54, 1.54, 1.63, 1.83, 2.01, 1.84], "QR": [0.21, 0.2, 0.16, 0.21, 0.25, 0.26, 0.25, 0.27, 0.28, 0.29, 0.36, 0.31], "ECOMMERCE": [0.15, 0.21, 0.16, 0.2, 0.24, 0.27, 0.22, 0.2, 0.27, 0.26, 0.22, 0.26]}, "rubros": [{"rubro": "Colmado", "comercios": 17, "pct_act": 88.2, "monto": 981162.0, "ticket": 1931.0}, {"rubro": "Restaurante", "comercios": 13, "pct_act": 92.3, "monto": 898209.0, "ticket": 2074.0}, {"rubro": "Estación de combustible", "comercios": 14, "pct_act": 92.9, "monto": 863994.0, "ticket": 2023.0}, {"rubro": "Ferretería", "comercios": 17, "pct_act": 88.2, "monto": 830825.0, "ticket": 2175.0}, {"rubro": "Taller mecánico", "comercios": 16, "pct_act": 87.5, "monto": 822086.0, "ticket": 1943.0}, {"rubro": "Salón de belleza", "comercios": 17, "pct_act": 70.6, "monto": 797875.0, "ticket": 1956.0}, {"rubro": "Farmacia", "comercios": 14, "pct_act": 85.7, "monto": 742611.0, "ticket": 2069.0}, {"rubro": "Supermercado", "comercios": 12, "pct_act": 83.3, "monto": 602605.0, "ticket": 2249.0}, {"rubro": "Tienda de ropa", "comercios": 20, "pct_act": 70.0, "monto": 565096.0, "ticket": 1969.0}, {"rubro": "Hotel", "comercios": 10, "pct_act": 80.0, "monto": 304618.0, "ticket": 2361.0}], "kpi": {"comercios": 150, "activos": 125, "inactivos": 25, "nuevos": 12, "monto3": 7409083.0, "ticket": 2044.0, "digital": 24.2, "terminales": 200}}, "p05": {"periodos": ["2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09", "2026-10"], "tendencia": [57.7, 56.6, 56.1, 56.9, 59.4, 58.1, 58.4, 58.5, 58.4, 58.6, 58.5, 58.9], "sucursales": [{"sucursal": "Baní", "zona": "Sur", "cuentas": 72, "tdd": 59, "oportunidad": 13, "pen": 81.9, "sem": "VERDE"}, {"sucursal": "La Vega", "zona": "Norte", "cuentas": 77, "tdd": 54, "oportunidad": 23, "pen": 70.1, "sem": "VERDE"}, {"sucursal": "San Cristóbal", "zona": "Sur", "cuentas": 67, "tdd": 46, "oportunidad": 21, "pen": 68.7, "sem": "AMARILLO"}, {"sucursal": "La Romana", "zona": "Este", "cuentas": 55, "tdd": 37, "oportunidad": 18, "pen": 67.3, "sem": "AMARILLO"}, {"sucursal": "Los Prados", "zona": "Metropolitana", "cuentas": 68, "tdd": 44, "oportunidad": 24, "pen": 64.7, "sem": "AMARILLO"}, {"sucursal": "Centro", "zona": "Metropolitana", "cuentas": 71, "tdd": 44, "oportunidad": 27, "pen": 62.0, "sem": "AMARILLO"}, {"sucursal": "Piantini", "zona": "Metropolitana", "cuentas": 64, "tdd": 39, "oportunidad": 25, "pen": 60.9, "sem": "AMARILLO"}, {"sucursal": "Punta Cana", "zona": "Este", "cuentas": 78, "tdd": 46, "oportunidad": 32, "pen": 59.0, "sem": "AMARILLO"}, {"sucursal": "Herrera", "zona": "Metropolitana", "cuentas": 60, "tdd": 34, "oportunidad": 26, "pen": 56.7, "sem": "AMARILLO"}, {"sucursal": "Puerto Plata", "zona": "Norte", "cuentas": 67, "tdd": 38, "oportunidad": 29, "pen": 56.7, "sem": "AMARILLO"}, {"sucursal": "Naco", "zona": "Metropolitana", "cuentas": 76, "tdd": 40, "oportunidad": 36, "pen": 52.6, "sem": "AMARILLO"}, {"sucursal": "Megacentro", "zona": "Metropolitana", "cuentas": 61, "tdd": 29, "oportunidad": 32, "pen": 47.5, "sem": "ROJO"}, {"sucursal": "Santiago Centro", "zona": "Norte", "cuentas": 82, "tdd": 19, "oportunidad": 63, "pen": 23.2, "sem": "ROJO"}], "kpi": {"pen": 58.9, "verde": 2, "amarillo": 9, "rojo": 2, "oportunidad": 369}}, "p08": {"get": [200, {"cliente_id": 12, "nombre": "Cliente Demo 12", "documento_ident": "001-0000012-2", "email": "cliente12@ejemplo.com", "telefono": "809-555-0012", "segmento": "MASIVO", "sucursal_id": 12, "sucursal": "Sucursal La Romana", "edad": 60, "fecha_alta": "2025-06-18", "estatus": "ACTIVO", "motivo_estatus": null, "fecha_creacion": "2026-11-06T12:02:39", "fecha_modificacion": null, "usuario_modificacion": null, "productos_activos": 3}], "post": [201, {"cliente_id": 2501, "nombre": "María Pérez", "documento_ident": "402-1234567-8", "email": "maria@ejemplo.com", "telefono": "809-555-0101", "segmento": "MASIVO", "sucursal_id": 1, "sucursal": "Sucursal Centro", "edad": 34, "fecha_alta": "2026-11-06", "estatus": "ACTIVO", "motivo_estatus": null, "fecha_creacion": "2026-11-06T12:02:39", "fecha_modificacion": null, "usuario_modificacion": "yara", "productos_activos": 0}], "aud": [200, [{"auditoria_id": 3, "accion": "ESTATUS", "campo": "estatus", "valor_anterior": "ACTIVO", "valor_nuevo": "BLOQUEADO · Revisión de documentos", "usuario": "yara", "fecha": "2026-11-06T12:02:39"}, {"auditoria_id": 2, "accion": "ACTUALIZAR", "campo": "segmento", "valor_anterior": "MASIVO", "valor_nuevo": "PREFERENTE", "usuario": "yara", "fecha": "2026-11-06T12:02:39"}, {"auditoria_id": 1, "accion": "CREAR", "campo": null, "valor_anterior": null, "valor_nuevo": "402-1234567-8", "usuario": "yara", "fecha": "2026-11-06T12:02:39"}]], "err": [409, {"error": "CONFLICTO", "detalle": "No se puede inactivar: el cliente tiene productos activos."}], "buscar": [200, {"pagina": 1, "tamano": 3, "total_registros": 111, "datos": [{"cliente_id": 10, "nombre": "Cliente Demo 10", "documento_ident": "001-0000010-0", "email": "cliente10@ejemplo.com", "segmento": "MASIVO", "sucursal_id": 10, "estatus": "ACTIVO"}, {"cliente_id": 100, "nombre": "Cliente Demo 100", "documento_ident": "001-0000100-0", "email": "cliente100@ejemplo.com", "segmento": "PYME", "sucursal_id": 1, "estatus": "ACTIVO"}, {"cliente_id": 101, "nombre": "Cliente Demo 101", "documento_ident": "001-0000101-1", "email": "cliente101@ejemplo.com", "segmento": "MASIVO", "sucursal_id": 7, "estatus": "ACTIVO"}]}]}};
+const P = [{"id": "01", "tipo": "Proceso de carga y reporte", "titulo": "Indicador de productividad histórica", "carpeta": "proyectos/01-productividad-historica", "lista": "Cuántos clientes y productos se ganan y se pierden cada mes por sucursal, comparado con la meta.", "tags": "T-SQL, PIVOT dinámico, LAG, Database Mail", "resumen": "Un proceso en SQL Server que cada mes calcula cuánto creció la cartera por familia de producto y sucursal, y lo compara con la meta.", "problema": "El área comercial quería ver mes a mes cuántos clientes y productos se ganaban y se perdían en cada sucursal. Se calculaba a mano en Excel, y cada persona llegaba a una cifra distinta.", "solucion": ["Un validador que revisa las tablas fuente antes de cargar, deja un log y manda un correo si falta algo.", "Una carga por período (<code>@Periodo = '2026-10'<\/code>) que se puede repetir sin duplicar datos.", "Una matriz por mes con PIVOT dinámico y la tendencia con LAG."], "resultado": ["Hay una sola cifra oficial por mes.", "El cierre dejó de ser un armado manual: es una ejecución que se valida sola."], "tablero": "Así se ve el indicador"}, {"id": "02", "tipo": "Modelo de propensión", "titulo": "Churn y reactivación de clientes", "carpeta": "proyectos/02-churn-reactivacion", "lista": "Un puntaje para saber a qué clientes retener y a cuáles vale la pena recuperar, con la explicación de cada caso.", "tags": "T-SQL, reglas ponderadas, STRING_AGG", "resumen": "Un modelo de reglas que le da a cada cliente un puntaje de 0 a 100, un nivel y una acción sugerida.", "problema": "El equipo comercial llamaba sin un orden claro. No sabía a quién intentar retener ni a quién valía la pena llamar para que volviera.", "solucion": ["Definí con el negocio cuándo un cliente está inactivo: sin productos activos y más de 6 meses sin productos.", "Un puntaje de fuga para los activos y otro de reactivación para los inactivos.", "Cada puntaje dice qué reglas sumaron, para que quien llama sepa por qué."], "resultado": ["Listas ordenadas por prioridad, con la acción sugerida.", "Un historial por fecha de corte para medir si las campañas funcionaron."], "tablero": "Así se ve el modelo"}, {"id": "03", "tipo": "Migración de Excel a Power BI", "titulo": "Ventas cruzadas", "carpeta": "proyectos/03-ventas-cruzadas-powerbi", "lista": "Cuántos productos adicionales se venden con cada préstamo, por producto, sucursal y colaborador.", "tags": "Power BI, modelo estrella, DAX, T-SQL", "resumen": "Por cada préstamo nuevo, mido qué otros productos se le vendieron al mismo cliente entre 30 días antes y 60 días después.", "problema": "El tablero vivía en un Excel muy ancho, lleno de tablas dinámicas por sucursal y por cargo. Actualizarlo tomaba horas y no guardaba la historia.", "solucion": ["Pasé la lógica a una vista en SQL Server con la ventana de venta cruzada.", "Una carga histórica por mes.", "Un modelo estrella en Power BI con medidas de penetración, acumulado del año, variación y ranking."], "resultado": ["Se actualiza con un refresco programado.", "Ahora hay historia mes a mes y todas las áreas ven las mismas cifras."], "tablero": "Así se ve el tablero"}, {"id": "04", "tipo": "Reporte operativo", "titulo": "Comercios afiliados", "carpeta": "proyectos/04-reporte-comercios", "lista": "Un reporte por comercio, no por terminal: activos, inactivos, nuevos, ticket promedio y uso de canales digitales.", "tags": "T-SQL, tablas temporales", "resumen": "Consolida terminales y transacciones por comercio y por cliente, con la fecha de corte como parámetro.", "problema": "Los reportes llegaban por terminal. Un comercio con tres terminales aparecía tres veces y los totales no cuadraban.", "solucion": ["Agrupo terminales y transacciones por comercio antes de unirlas, para no multiplicar filas.", "Un comercio está activo si tuvo transacciones en los últimos 90 días.", "Marco como nuevos a los que tienen menos de 3 meses afiliados."], "resultado": ["Hay una lista de comercios para recuperar.", "Se puede seguir el arranque de los nuevos y comparar rubros."], "tablero": "Así se ve el reporte"}, {"id": "05", "tipo": "Tablero gerencial", "titulo": "Semáforo de tarjeta de débito por sucursal", "carpeta": "proyectos/05-semaforo-penetracion-tdd", "lista": "Qué sucursales están por debajo de la meta de tarjeta de débito y cuántos clientes se pueden trabajar en cada una.", "tags": "DAX, formato condicional, T-SQL", "resumen": "Mide qué parte de los clientes con cuenta tiene también tarjeta de débito, por sucursal y al cierre de cada mes.", "problema": "Muchos clientes tenían cuenta pero no tarjeta de débito, y eso es menos uso y menos comisiones. La gerencia necesitaba ver rápido dónde actuar.", "solucion": ["Una vista con los productos activos al cierre de cada mes.", "Un semáforo: verde desde 70 %, amarillo entre 50 % y 70 %, rojo por debajo de 50 %.", "La oportunidad de cada sucursal: clientes con cuenta y sin tarjeta."], "resultado": ["Las campañas se priorizan por sucursal.", "Los porcentajes se recalculan con totales, así que cuadran a cualquier nivel."], "tablero": "Así se ve el semáforo"}, {"id": "06", "tipo": "Automatización", "titulo": "El reporte mensual en un solo comando", "carpeta": "proyectos/06-automatizacion-python", "lista": "Carga, extracción, Excel con formato y envío por correo, programado y con log.", "tags": "Python, pandas, openpyxl, pyodbc", "resumen": "Un script de Python que ejecuta el cierre, arma el Excel y lo envía. Lo dejo programado y me olvido.", "problema": "En cada cierre había que ejecutar procedimientos a mano, copiar los resultados a Excel, darles formato y enviarlos. Mucho tiempo repetido y mucho espacio para errores.", "solucion": ["El script corre la carga con su validación.", "Arma el Excel con filtros, paneles fijos y los negativos en rojo.", "Lo envía por correo y deja todo anotado en un log."], "resultado": ["El cierre corre solo el día programado.", "Tiene un modo de prueba que funciona sin base de datos."], "tablero": "Así funciona"}, {"id": "07", "tipo": "Diseño de procesos", "titulo": "Flujo de reasignación de cartera", "carpeta": "proyectos/07-flujo-carterizacion", "lista": "Las solicitudes para mover clientes entre ejecutivos pasaron del correo a un flujo con estados y aprobaciones.", "tags": "Zoho Desk Blueprint, levantamiento de procesos", "resumen": "Lideré el rediseño del proceso para mover clientes entre ejecutivos, con trazabilidad de principio a fin.", "problema": "Las solicitudes llegaban por correo y Excel. Las aprobaciones se perdían y nadie sabía en qué estado estaba cada una.", "solucion": ["Un formulario estándar para cada solicitud.", "Aprobación de la vicepresidencia solo cuando la regla lo exige.", "Tiempos por etapa y escalamiento si algo se atrasa."], "resultado": ["Cada solicitud tiene un estado y un responsable a la vista.", "Para auditar un cambio ya no hay que buscar en correos."], "tablero": "El flujo"}, {"id": "08", "tipo": "API REST", "titulo": "API de mantenimiento de clientes", "carpeta": "proyectos/08-api-mantenimiento-clientes", "lista": "Un solo punto para crear, consultar, actualizar y bloquear clientes, con las mismas reglas para todos y un registro de cada cambio.", "tags": "Python, FastAPI, Pydantic, T-SQL, pytest", "resumen": "Una API cuyas reglas viven en procedimientos almacenados de SQL Server. Incluye un modo de prueba y pruebas automáticas.", "problema": "Los datos de los clientes se cambiaban desde varios canales con validaciones distintas. Había documentos duplicados, correos mal escritos y cambios sin registro.", "solucion": ["Siete endpoints con validación de datos y documentación automática.", "Las reglas viven en los procedimientos <code>sp_Cliente_*<\/code>, y sus errores se convierten en respuestas HTTP claras.", "Una auditoría que guarda el valor anterior y el nuevo de cada campo."], "resultado": ["Todos los canales aplican las mismas reglas.", "Las 7 pruebas automáticas pasan en el modo de prueba."], "tablero": "La API funcionando"}];
+
+const fmt = (n, d = 0) => Number(n).toLocaleString("es-DO", { minimumFractionDigits: d, maximumFractionDigits: d });
+const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+const mesCorto = p => `${MESES[+p.slice(5) - 1].slice(0, 3)} ${p.slice(2, 4)}`;
+const mesLargo = p => `${MESES[+p.slice(5) - 1]} de ${p.slice(0, 4)}`;
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function pintarPortada() {
+  document.getElementById("lista-proyectos").innerHTML = P.map(x => `
+    <li><span class="n">${+x.id}.</span><div>
+      <h3><a href="#proyecto-${x.id}">${x.titulo}</a></h3>
+      <p>${x.lista}</p>
+      <div class="meta">${x.tipo} · ${x.tags}</div>
+      <div class="accesos"><a href="#proyecto-${x.id}">Ver descripción y tablero →</a>${REPO ? `<a href="${REPO}/tree/main/${x.carpeta}">Código</a>` : ""}</div>
+    </div></li>`).join("");
+}
+
+/* ---------------------------------------------------------------- Utilidades */
+let graficos = [];
+function limpiarGraficos() { graficos.forEach(g => g.destroy()); graficos = []; }
+const cifras = items => `<div class="cifras">${items.map(k => `<div class="cifra"><div class="v">${k[1]}</div><div class="et">${k[0]}</div>${k[2] ? `<div class="d ${k[3] || ""}">${k[2]}</div>` : ""}</div>`).join("")}</div>`;
+const fig = (titulo, sub, cuerpo) => `<div class="fig"><h3>${titulo}</h3>${sub ? `<p class="meta">${sub}</p>` : ""}${cuerpo}</div>`;
+const lienzo = (id, alto, label) => `<div class="lienzo${alto ? " alto" : ""}"><canvas id="${id}" role="img" aria-label="${esc(label || "Gráfico")}"></canvas></div>`;
+const tabla = (cab, filas) => `<div class="scroll"><table class="datos"><thead><tr>${cab.map(c => `<th class="${c[1] || ""}">${c[0]}</th>`).join("")}</tr></thead><tbody>${filas.join("")}</tbody></table></div>`;
+const chip = (cls, txt) => `<span class="chip ${cls}">${txt}</span>`;
+
+function opc(extra = {}) {
+  const tinta = css("--muted"), regla = css("--rule"), f = { family: "Source Sans 3, system-ui, sans-serif", size: 12 };
+  const o = {
+    responsive: true, maintainAspectRatio: false, animation: false,
+    interaction: { mode: "index", intersect: false },
+    plugins: {
+      legend: { position: "top", align: "start", labels: { color: tinta, boxWidth: 10, boxHeight: 10, usePointStyle: true, pointStyle: "rectRounded", font: f } },
+      tooltip: { backgroundColor: css("--ink"), titleColor: css("--paper"), bodyColor: css("--paper"), padding: 10, titleFont: f, bodyFont: f, boxPadding: 4 },
+    },
+    scales: {
+      x: { grid: { display: false }, border: { color: regla }, ticks: { color: tinta, font: f } },
+      y: { grid: { color: regla, drawTicks: false }, border: { display: false }, ticks: { color: tinta, padding: 6, font: f }, beginAtZero: true },
+    },
+  };
+  if (extra.sinLeyenda) o.plugins.legend.display = false;
+  if (extra.horizontal) { o.indexAxis = "y"; const x = o.scales.x; o.scales.x = o.scales.y; o.scales.y = x; }
+  return o;
+}
+function grafico(id, cfg) { const g = new Chart(document.getElementById(id), cfg); graficos.push(g); return g; }
+const serie = i => css(`--s${i + 1}`);
+const barra = c => ({ backgroundColor: c, borderRadius: { topLeft: 4, topRight: 4 }, borderSkipped: "start", maxBarThickness: 26, borderColor: css("--paper"), borderWidth: { right: 1, left: 1 } });
+const barraH = c => ({ backgroundColor: c, borderRadius: { topRight: 4, bottomRight: 4 }, borderSkipped: "start", maxBarThickness: 18 });
+const linea = (c, relleno) => ({ borderColor: c, backgroundColor: relleno ? c + "22" : c, fill: !!relleno, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, tension: 0 });
+
+/* ---------------------------------------------------------------- Tableros */
+const TABLEROS = {
+  "01"(el) {
+    const p = D.p01, k = p.kpi, ult = p.periodos.at(-1);
+    const fin = p.total.map((t, i) => [p.familias[i], t.at(-1), t.at(-1) - t[0]]).sort((a, b) => b[2] - a[2]);
+    const mejor = p.sucursales[0], peor = p.sucursales.at(-1);
+    const cumplen = p.sucursales.filter(s => s.cumpl >= 100).length;
+    el.innerHTML = `<div class="col">${cifras([
+        ["productos activos", fmt(k.total), `al cierre de ${mesLargo(ult)}`],
+        ["nuevos en el mes", fmt(k.nuevos)], ["cancelados", fmt(k.decrec)],
+        ["crecimiento neto", (k.crec >= 0 ? "+" : "") + fmt(k.crec), "", k.crec >= 0 ? "up" : "down"],
+        ["de la meta del mes", fmt(k.cumpl, 1) + " %"],
+      ])}</div>
+      <div class="dos">
+        ${fig(`${fin.every(f => f[2] > 0) ? "Todas las familias crecen" : "No todas las familias crecen"}; ${fin[0][0].toLowerCase()} es la que más sumó en el año (+${fmt(fin[0][2])})`, "Productos activos al cierre de cada mes", lienzo("g01a", false, "Total de productos por familia"))}
+        ${fig(`Cada mes entran unas ${fmt(Math.round(p.nuevos.reduce((a, b) => a + b) / 12 / 10) * 10)} ventas y se cancelan unas ${fmt(Math.round(p.decrec.reduce((a, b) => a + b) / 12 / 10) * 10)}`, "Productos nuevos y cancelados por mes, todas las familias", lienzo("g01b", false, "Nuevos contra cancelados"))}
+      </div>
+      <div class="col">${fig(`En ${MESES[+ult.slice(5) - 1]} solo ${cumplen === 1 ? "una sucursal cumplió" : `${cumplen} sucursales cumplieron`} la meta. ${mejor.sucursal} llegó a ${fmt(mejor.cumpl, 1)} % y ${peor.sucursal} quedó en ${fmt(peor.cumpl, 1)} %.`,
+        "Productos nuevos del mes contra la meta de cada sucursal",
+        tabla([["Sucursal", "izq"], ["Zona", "izq"], ["Nuevos"], ["Meta"], ["Cumplimiento", "izq"], ["", "izq"]],
+          p.sucursales.map(s => `<tr><td class="izq">${s.sucursal}</td><td class="izq">${s.zona}</td><td>${s.nuevos}</td><td>${s.meta}</td>
+            <td class="izq"><span class="barra" style="width:${Math.min(s.cumpl, 130) * .8}px"></span>${fmt(s.cumpl, 1)} %</td>
+            <td class="izq">${s.cumpl >= 100 ? chip("good", "cumple") : s.cumpl >= 80 ? chip("warn", "cerca") : chip("crit", "bajo meta")}</td></tr>`)))}</div>`;
+    const et = p.periodos.map(mesCorto);
+    grafico("g01a", { type: "line", data: { labels: et, datasets: p.familias.map((f, i) => ({ label: f, data: p.total[i], ...linea(serie(i)) })) }, options: opc() });
+    grafico("g01b", { type: "bar", data: { labels: et, datasets: [{ label: "Nuevos", data: p.nuevos, ...barra(serie(0)) }, { label: "Cancelados", data: p.decrec, ...barra(serie(1)) }] }, options: opc() });
+  },
+
+  "02"(el) {
+    const p = D.p02, k = p.kpi, f0 = p.factores[0], f1 = p.factores[1];
+    el.innerHTML = `<div class="col">${cifras([
+        ["clientes evaluados", fmt(k.clientes), `corte del ${D.corte}`],
+        ["activos en riesgo alto", fmt(k.riesgo_alto), `${fmt(100 * k.riesgo_alto / k.activos, 1)} % de los activos`, "down"],
+        ["inactivos recientes", fmt(k.recientes), "6 meses o menos sin productos"],
+        ["con alta probabilidad de volver", fmt(k.reac_alto)],
+      ])}</div>
+      <div class="dos">
+        ${fig("El grupo más grande de activos está en riesgo medio; el alto empieza en 60 puntos", "Clientes activos por rango de puntaje (verde bajo, amarillo medio, rojo alto)", lienzo("g02a", false, "Distribución del puntaje de fuga"))}
+        ${fig(`En el riesgo alto pesan sobre todo «${f0[0].toLowerCase()}» y «${f1[0].toLowerCase()}»`, "Cuántas veces sumó cada regla en los clientes de nivel alto", lienzo("g02b", false, "Factores del riesgo alto"))}
+      </div>
+      <div class="col">${fig("La lista que recibe el call center", "Los ocho clientes con el puntaje de fuga más alto y por qué",
+        tabla([["Cliente", "izq"], ["Segmento", "izq"], ["Puntaje"], ["Por qué", "izq"]],
+          p.top.map(t => `<tr><td class="izq">#${t.cliente_id}</td><td class="izq">${t.segmento.toLowerCase()}</td><td>${t.score}</td><td class="wrap">${esc(t.factores)}</td></tr>`)))}
+      <p class="nota" style="margin-top:14px">Entre los inactivos, ${fmt(p.dist.REACTIVACION[0])} tienen probabilidad alta de volver, ${fmt(p.dist.REACTIVACION[1])} media y ${fmt(p.dist.REACTIVACION[2])} baja. Los ${fmt(k.recientes)} inactivos recientes van directo al ejecutivo, porque es cuando más fácil es recuperarlos.</p></div>`;
+    const col = i => i >= 6 ? css("--crit") : i >= 3 ? css("--warn") : css("--good");
+    grafico("g02a", { type: "bar", data: { labels: p.hist.map((_, i) => `${i * 10}–${i === 9 ? 100 : i * 10 + 9}`), datasets: [{ label: "Clientes", data: p.hist, ...barra(p.hist.map((_, i) => col(i))) }] }, options: opc({ sinLeyenda: true }) });
+    grafico("g02b", { type: "bar", data: { labels: p.factores.map(f => f[0]), datasets: [{ label: "Clientes", data: p.factores.map(f => f[1]), ...barraH(serie(0)) }] }, options: opc({ sinLeyenda: true, horizontal: true }) });
+  },
+
+  "03"(el) {
+    const p = D.p03, k = p.kpi, dif = k.ult - k.ant, top = p.pen_prod[0], madre = p.por_madre[0], ult = p.por_madre.at(-1);
+    el.innerHTML = `<div class="col">${cifras([
+        ["préstamos nuevos en 12 meses", fmt(k.aperturas)],
+        ["llevaron al menos un producto más", fmt(k.pen, 1) + " %"],
+        ["productos adicionales por préstamo", fmt(k.prod_ap, 2)],
+      ])}</div>
+      <div class="dos">
+        ${fig(k.pen >= 50 ? "Más de la mitad de los préstamos sale con otro producto" : `${fmt(k.pen, 1)} % de los préstamos sale con otro producto`, `El último mes baja porque todavía está madurando: la ventana es de 60 días.`, lienzo("g03a", false, "Penetración mensual"))}
+        ${fig(`La tarjeta de crédito es lo que más se vende junto al préstamo (${fmt(top[1], 1)} %)`, "% de préstamos que incluyen cada producto", lienzo("g03b", false, "Penetración por producto"))}
+      </div>
+      <div class="dos">
+        ${fig(`${madre[0]} tiene la mejor venta cruzada (${fmt(madre[1], 1)} %); ${ult[0].toLowerCase()} la más baja`, "% con venta cruzada por tipo de préstamo (entre paréntesis, cuántos)", lienzo("g03c", false, "Penetración por producto madre"))}
+        ${fig("Los colaboradores con mejor venta cruzada", "Con al menos 8 préstamos en el año",
+          tabla([["", "izq"], ["Código", "izq"], ["Cargo", "izq"], ["Préstamos"], ["Con cruce"]],
+            p.ranking.map((r, i) => `<tr><td class="izq">${i + 1}</td><td class="izq">${r.codigo}</td><td class="izq">${r.cargo}</td><td>${r.aperturas}</td><td>${fmt(r.pen, 1)} %</td></tr>`)))}
+      </div>`;
+    grafico("g03a", { type: "line", data: { labels: p.periodos.map(mesCorto), datasets: [{ label: "% con venta cruzada", data: p.pen_mes, ...linea(serie(0), true) }] }, options: opc({ sinLeyenda: true }) });
+    grafico("g03b", { type: "bar", data: { labels: p.pen_prod.map(x => x[0]), datasets: [{ label: "% de préstamos", data: p.pen_prod.map(x => x[1]), ...barraH(serie(0)) }] }, options: opc({ sinLeyenda: true, horizontal: true }) });
+    grafico("g03c", { type: "bar", data: { labels: p.por_madre.map(x => `${x[0]} (${x[2]})`), datasets: [{ label: "% con venta cruzada", data: p.por_madre.map(x => x[1]), ...barra(serie(0)) }] }, options: opc({ sinLeyenda: true }) });
+  },
+
+  "04"(el) {
+    const p = D.p04, k = p.kpi, r0 = p.rubros[0], baja = [...p.rubros].sort((a, b) => a.pct_act - b.pct_act)[0];
+    el.innerHTML = `<div class="col">${cifras([
+        ["comercios afiliados", fmt(k.comercios), `${fmt(k.terminales)} terminales activas`],
+        ["siguen transando", fmt(k.activos), `${fmt(100 * k.activos / k.comercios, 1)} %`, "up"],
+        ["sin transacciones en 90 días", fmt(k.inactivos), "", "down"],
+        ["afiliados hace menos de 3 meses", fmt(k.nuevos)],
+        ["RD$ en los últimos 3 meses", fmt(k.monto3 / 1e6, 1) + " M", `ticket promedio RD$ ${fmt(k.ticket)}`],
+      ])}</div>
+      <div class="col">${fig(`El monto viene subiendo y ${fmt(k.digital, 1)} % ya pasa por QR o e-commerce`, "Millones de RD$ por mes, según el canal", lienzo("g04a", true, "Monto por canal"))}</div>
+      <div class="col">${fig(`${r0.rubro} es el rubro que más mueve; ${baja.rubro.toLowerCase()} es donde más comercios se han apagado`, "Últimos 3 meses, ordenado por monto",
+        tabla([["Rubro", "izq"], ["Comercios"], ["Activos", "izq"], ["Monto (RD$)"], ["Ticket"]],
+          p.rubros.map(r => `<tr><td class="izq">${r.rubro}</td><td>${r.comercios}</td>
+            <td class="izq">${chip(r.pct_act >= 85 ? "good" : r.pct_act >= 70 ? "warn" : "crit", fmt(r.pct_act, 1) + " %")}</td>
+            <td>${fmt(r.monto)}</td><td>${fmt(r.ticket)}</td></tr>`)))}</div>`;
+    const can = [["PRESENCIAL", "Presencial (POS)"], ["QR", "QR"], ["ECOMMERCE", "E-commerce"]], sc = opc().scales;
+    grafico("g04a", { type: "bar", data: { labels: p.periodos.map(mesCorto), datasets: can.map((c, i) => ({ label: c[1], data: p.canal[c[0]], ...barra(serie(i)), borderRadius: i === 2 ? { topLeft: 4, topRight: 4 } : 0, borderWidth: { top: 2 }, borderColor: css("--paper") })) },
+      options: { ...opc(), scales: { x: { ...sc.x, stacked: true }, y: { ...sc.y, stacked: true, ticks: { ...sc.y.ticks, callback: v => v + " M" } } } } });
+  },
+
+  "05"(el) {
+    const p = D.p05, k = p.kpi, s0 = p.sucursales[0], sN = p.sucursales.at(-1);
+    const mayorOp = [...p.sucursales].sort((a, b) => b.oportunidad - a.oportunidad)[0];
+    const cls = s => s === "VERDE" ? "good" : s === "AMARILLO" ? "warn" : "crit";
+    el.innerHTML = `<div class="col">${cifras([
+        ["de los clientes con cuenta tiene débito", fmt(k.pen, 1) + " %", "la meta es 70 %", "down"],
+        ["sucursales en verde", k.verde], ["en amarillo", k.amarillo], ["en rojo", k.rojo],
+        ["clientes con cuenta y sin débito", fmt(k.oportunidad)],
+      ])}</div>
+      <div class="dos">
+        ${fig(`${s0.sucursal} va adelante con ${fmt(s0.pen, 1)} %; ${sN.sucursal} está en ${fmt(sN.pen, 1)} %`, "Penetración al cierre. Líneas punteadas en 50 % y 70 %", lienzo("g05a", true, "Penetración por sucursal"))}
+        ${fig("El total se mantiene estable, lejos de la meta", "Penetración de toda la red en los últimos 12 meses", lienzo("g05b", true, "Tendencia de penetración"))}
+      </div>
+      <div class="col">${fig(`Por dónde empezar: ${mayorOp.sucursal} tiene ${mayorOp.oportunidad} clientes con cuenta y sin tarjeta`, "",
+        tabla([["Sucursal", "izq"], ["Zona", "izq"], ["Con cuenta"], ["Con débito"], ["Sin débito"], ["%"], ["", "izq"]],
+          p.sucursales.map(s => `<tr><td class="izq">${s.sucursal}</td><td class="izq">${s.zona}</td><td>${s.cuentas}</td><td>${s.tdd}</td><td>${s.oportunidad}</td><td>${fmt(s.pen, 1)}</td><td class="izq">${chip(cls(s.sem), s.sem.toLowerCase())}</td></tr>`)))}</div>`;
+    const ref = { id: "ref", afterDatasetsDraw(c) {
+      const { ctx, chartArea: a, scales: { x } } = c; ctx.save(); ctx.setLineDash([4, 4]); ctx.lineWidth = 1;
+      [[50, css("--warn")], [70, css("--good")]].forEach(([v, col]) => { const px = x.getPixelForValue(v); ctx.strokeStyle = col; ctx.beginPath(); ctx.moveTo(px, a.top); ctx.lineTo(px, a.bottom); ctx.stroke(); });
+      ctx.restore(); } };
+    const col = { VERDE: css("--good"), AMARILLO: css("--warn"), ROJO: css("--crit") };
+    const oh = opc({ sinLeyenda: true, horizontal: true });
+    oh.scales.x = { ...oh.scales.x, max: 100, ticks: { ...oh.scales.x.ticks, callback: v => v + " %" } };
+    grafico("g05a", { type: "bar", plugins: [ref], data: { labels: p.sucursales.map(s => s.sucursal), datasets: [{ label: "% con débito", data: p.sucursales.map(s => s.pen), ...barraH(p.sucursales.map(s => col[s.sem])) }] }, options: oh });
+    const ol = opc({ sinLeyenda: true });
+    ol.scales.y = { ...ol.scales.y, beginAtZero: false, suggestedMin: 40, suggestedMax: 80, ticks: { ...ol.scales.y.ticks, callback: v => v + " %" } };
+    grafico("g05b", { type: "line", data: { labels: p.periodos.map(mesCorto), datasets: [{ label: "% con débito", data: p.tendencia, ...linea(serie(0), true) }] }, options: ol });
+  },
+
+  "06"(el) {
+    const p = D.p01, n = 4, per = p.periodos.slice(-n), ult = p.periodos.at(-1);
+    const filas = [];
+    p.familias.slice(0, 3).forEach((f, i) => {
+      const tot = p.total[i].slice(-n), prev = p.total[i].slice(-n - 1);
+      filas.push(`<tr><td class="izq">${f}</td><td class="izq">Total productos</td>${tot.map(v => `<td>${fmt(v)}</td>`).join("")}</tr>`);
+      filas.push(`<tr><td class="izq">${f}</td><td class="izq">Crecimiento</td>${tot.map((v, j) => { const c = v - prev[j]; return `<td style="color:${c < 0 ? "var(--down)" : "inherit"}">${c}</td>`; }).join("")}</tr>`);
+    });
+    el.innerHTML = `<div class="col">${fig("Lo que pasa cuando se ejecuta", "",
+        `<ol class="pasos"><li>El día 2 de cada mes lo dispara el Programador de tareas de Windows (o un Job del SQL Agent).</li>
+        <li>Valida las fuentes y carga el período en SQL Server.</li>
+        <li>Extrae con pandas la matriz, la tendencia y los comercios inactivos.</li>
+        <li>Arma el Excel con openpyxl: encabezados, filtros, paneles fijos y negativos en rojo.</li>
+        <li>Lo envía por correo a gerencia y anota cada paso en el log.</li></ol>`)}</div>
+      <div class="dos">
+        ${fig("Un pedazo del Excel que genera", `Hoja «Matriz» de Reporte_Productividad_${ult}.xlsx`, tabla([["Familia", "izq"], ["Métrica", "izq"], ...per.map(x => [mesCorto(x)])], filas))}
+        ${fig("Lo que se ve en la consola", "", `<pre class="codigo">$ python reporte_mensual.py --modo csv --periodo ${ult}
+… | INFO | Excel generado:
+    salida/Reporte_Productividad_${ult}.xlsx
+… | INFO | Proceso terminado correctamente.
+
+$ python reporte_mensual.py --modo sql --enviar
+… | INFO | Ejecutando carga del período ${ult}…
+… | INFO | Extrayendo matriz ${p.periodos[0]} a ${ult}…
+… | INFO | Excel generado: salida/Reporte_…xlsx
+… | INFO | Correo enviado a gerencia@…</pre>`)}
+      </div>
+      <div class="col"><p class="nota">Si algo falla, el script termina con código 1 y el Programador de tareas lo marca como error, así nadie se entera tarde.</p></div>`;
+  },
+
+  "07"(el) {
+    el.innerHTML = `<div class="col">${fig("Las etapas de una solicitud", "",
+        `<ol class="pasos"><li><strong>Solicitud.</strong> El ejecutivo o el gerente abre un ticket con el formulario: clientes, ejecutivo de origen y de destino, y motivo.</li>
+        <li><strong>Validación.</strong> Si falta algo, vuelve al solicitante.</li>
+        <li><strong>Aprobación de la gerencia.</strong> Aprueba o rechaza, siempre con un comentario.</li>
+        <li><strong>¿Necesita a la vicepresidencia?</strong> Solo si la regla lo pide (por ejemplo, una cartera de alto valor). Si no, pasa directo.</li>
+        <li><strong>Ejecución y cierre.</strong> BI aplica el cambio en los datos y se avisa a todos los involucrados.</li></ol>`)}</div>
+      <div class="col">${fig("Antes y después", "",
+        tabla([["", "izq"], ["Antes", "izq"], ["Ahora", "izq"]], [
+          ["Dónde llega", "Correo y Excel", "Ticket con formulario"], ["Estado", "Nadie sabía", "A la vista en cada etapa"], ["Vicepresidencia", "Veía todo o nada", "Solo lo que le corresponde"],
+          ["Tiempos", "Sin control", "Tiempo por etapa y escalamiento"], ["Auditoría", "Buscar en correos", "Historial en el ticket"]].map(r => `<tr><td class="izq"><strong>${r[0]}</strong></td><td class="izq">${r[1]}</td><td class="izq">${r[2]}</td></tr>`)))}
+      <p class="nota" style="margin-top:14px">Este proyecto es de procesos, no de código, y no publico cifras internas. Lo incluyo porque buena parte del trabajo de BI es sentarse con la gente a entender cómo funcionan las cosas antes de tocar los datos.</p></div>`;
+  },
+
+  "08"(el) {
+    const e = D.p08 || {};
+    const ej = [
+      ["Consultar", "GET", "/clientes/12", null, e.get],
+      ["Crear", "POST", "/clientes", { nombre: "María Pérez", documento_ident: "402-1234567-8", email: "maria@ejemplo.com", segmento: "MASIVO", sucursal_id: 1, edad: 34 }, e.post],
+      ["Ver auditoría", "GET", "/clientes/2501/auditoria", null, e.aud],
+      ["Un error de regla", "PUT", "/clientes/12/estatus", { estatus: "INACTIVO", motivo: "Solicitud del cliente" }, e.err],
+      ["Buscar", "GET", "/clientes?texto=Cliente Demo 10&tamano=3", null, e.buscar],
+    ];
+    const ep = [["GET", "/salud", "Estado de la API"], ["GET", "/clientes", "Buscar, con paginación"], ["GET", "/clientes/{id}", "Ficha del cliente"], ["POST", "/clientes", "Crear"],
+      ["PATCH", "/clientes/{id}", "Cambiar solo los campos enviados"], ["PUT", "/clientes/{id}/estatus", "Activar, inactivar o bloquear"], ["GET", "/clientes/{id}/auditoria", "Historial de cambios"]];
+    el.innerHTML = `<div class="dos">
+        ${fig("Los siete endpoints", "Todas las rutas de clientes piden una API key", tabla([["", "izq"], ["Ruta", "izq"], ["Para qué", "izq"]],
+          ep.map(r => `<tr><td class="izq" style="color:var(--accent);font-weight:600">${r[0]}</td><td class="izq">${r[1]}</td><td class="izq" style="white-space:normal">${r[2]}</td></tr>`)))}
+        ${fig("Pruébala", "Respuestas reales, guardadas de la API en modo de prueba", `<div class="tabs" role="tablist">${ej.map((x, i) => `<button type="button" role="tab" id="tab-api-${i}" aria-selected="${i === 0}" data-i="${i}">${x[0]}</button>`).join("")}</div><pre class="codigo" id="api-salida"></pre>`)}
+      </div>
+      <div class="col">${fig("Las reglas que hace cumplir", "Se validan en la API y otra vez en SQL Server",
+        tabla([["Regla", "izq"], ["Si no se cumple", "izq"]], [
+          ["Documento con formato 000-0000000-0", "422 · dato inválido"], ["Documento o correo que ya existe", "409 · conflicto"], ["Inactivar a alguien con productos activos", "409 · conflicto"],
+          ["Cambiar el estatus sin un motivo", "422 · dato inválido"], ["Cliente que no existe", "404"], ["API key incorrecta", "401"]].map(r => `<tr><td class="izq">${r[0]}</td><td class="izq">${r[1]}</td></tr>`)))}</div>`;
+    const salida = document.getElementById("api-salida");
+    const mostrar = i => {
+      const [, m, ruta, cuerpo, resp] = ej[i];
+      let t = `${m} ${ruta}\nX-API-Key: clave-demo-123\nX-Usuario: yara\n`;
+      if (cuerpo) t += `\n${JSON.stringify(cuerpo, null, 2)}\n`;
+      t += resp ? `\n← ${resp[0]}\n${JSON.stringify(resp[1], null, 2)}` : "\n(sin datos)";
+      salida.textContent = t;
+      el.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", String(+b.dataset.i === i)));
+    };
+    el.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => mostrar(+b.dataset.i)));
+    mostrar(0);
+  },
+};
+
+/* ---------------------------------------------------------------- Vista de proyecto */
+function abrirProyecto(id) {
+  const i = P.findIndex(x => x.id === id), x = P[i];
+  limpiarGraficos();
+  document.getElementById("d-meta").textContent = `Proyecto ${+x.id} de ${P.length} · ${x.tipo}`;
+  document.getElementById("d-titulo").textContent = x.titulo;
+  document.getElementById("d-resumen").textContent = x.resumen;
+  document.getElementById("d-problema").textContent = x.problema;
+  document.getElementById("d-solucion").innerHTML = x.solucion.map(s => `<li>${s}</li>`).join("");
+  document.getElementById("d-resultado").innerHTML = x.resultado.map(s => `<li>${s}</li>`).join("");
+  document.getElementById("d-tags").textContent = "Herramientas: " + x.tags + ".";
+  document.getElementById("d-tablero-titulo").textContent = x.tablero;
+  document.getElementById("d-tablero-nota").textContent = ["06", "07", "08"].includes(id) ? "" : `Datos ficticios, con corte al ${D.corte}.`;
+  const ant = P[(i + P.length - 1) % P.length], sig = P[(i + 1) % P.length];
+  Object.assign(document.getElementById("ant"), { href: `#proyecto-${ant.id}`, textContent: `← ${ant.titulo}` });
+  Object.assign(document.getElementById("sig"), { href: `#proyecto-${sig.id}`, textContent: `${sig.titulo} →` });
+  document.getElementById("d-links").innerHTML = REPO ? `<a href="${REPO}/tree/main/${x.carpeta}">Ver el código</a>` : "";
+  document.title = `${x.titulo} · Yara Arias`;
+  const cont = document.getElementById("d-tablero");
+  try { TABLEROS[id](cont); }
+  catch (err) { cont.innerHTML = `<div class="col"><p class="nota">No se pudo dibujar el tablero (${esc(err.message)}). Recarga la página.</p></div>`; }
+}
+
+let actual = null;
+function enrutar() {
+  const h = location.hash.slice(1), m = /^proyecto-(\d\d)$/.exec(h);
+  const inicio = document.getElementById("vista-inicio"), det = document.getElementById("vista-proyecto");
+  if (m && P.some(x => x.id === m[1])) {
+    inicio.hidden = true; det.hidden = false;
+    if (actual !== m[1]) { actual = m[1]; abrirProyecto(m[1]); }
+    window.scrollTo(0, 0);
+  } else {
+    if (det.hidden) return;
+    const venia = actual; actual = null; limpiarGraficos();
+    det.hidden = true; inicio.hidden = false; document.title = "Yara Arias · Portafolio BI";
+    const destino = h && document.getElementById(h);
+    if (destino) destino.scrollIntoView(); else if (venia) document.getElementById("proyectos").scrollIntoView();
+  }
+}
+
+/* ---------------------------------------------------------------- Arranque */
+pintarPortada();
+if (REPO) { ["github-dt", "github-dd"].forEach(i => document.getElementById(i).hidden = false); document.getElementById("github-link").href = REPO; }
+if (LINKEDIN) { ["linkedin-dt", "linkedin-dd"].forEach(i => document.getElementById(i).hidden = false); document.getElementById("linkedin-link").href = LINKEDIN; }
+document.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = "Copiado"; } catch (e) { b.textContent = "Selecciona y copia"; }
+  setTimeout(() => { b.textContent = "Copiar"; }, 1800);
+}));
+window.addEventListener("hashchange", enrutar);
+enrutar();
+const redibujar = () => { if (actual) { const id = actual; actual = null; abrirProyecto(id); actual = id; } };
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", redibujar);
+new MutationObserver(redibujar).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+</script>
+</body>
+</html>

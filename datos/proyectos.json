@@ -1,0 +1,122 @@
+[
+  {
+    "id": "01", "tipo": "Proceso de carga y reporte", "titulo": "Indicador de productividad histórica",
+    "carpeta": "proyectos/01-productividad-historica",
+    "lista": "Cuántos clientes y productos se ganan y se pierden cada mes por sucursal, comparado con la meta.",
+    "tags": "T-SQL, PIVOT dinámico, LAG, Database Mail",
+    "resumen": "Un proceso en SQL Server que cada mes calcula cuánto creció la cartera por familia de producto y sucursal, y lo compara con la meta.",
+    "problema": "El área comercial quería ver mes a mes cuántos clientes y productos se ganaban y se perdían en cada sucursal. Se calculaba a mano en Excel, y cada persona llegaba a una cifra distinta.",
+    "solucion": [
+      "Un validador que revisa las tablas fuente antes de cargar, deja un log y manda un correo si falta algo.",
+      "Una carga por período (<code>@Periodo = '2026-10'</code>) que se puede repetir sin duplicar datos.",
+      "Una matriz por mes con PIVOT dinámico y la tendencia con LAG."
+    ],
+    "resultado": ["Hay una sola cifra oficial por mes.", "El cierre dejó de ser un armado manual: es una ejecución que se valida sola."],
+    "tablero": "Así se ve el indicador"
+  },
+  {
+    "id": "02", "tipo": "Modelo de propensión", "titulo": "Churn y reactivación de clientes",
+    "carpeta": "proyectos/02-churn-reactivacion",
+    "lista": "Un puntaje para saber a qué clientes retener y a cuáles vale la pena recuperar, con la explicación de cada caso.",
+    "tags": "T-SQL, reglas ponderadas, STRING_AGG",
+    "resumen": "Un modelo de reglas que le da a cada cliente un puntaje de 0 a 100, un nivel y una acción sugerida.",
+    "problema": "El equipo comercial llamaba sin un orden claro. No sabía a quién intentar retener ni a quién valía la pena llamar para que volviera.",
+    "solucion": [
+      "Definí con el negocio cuándo un cliente está inactivo: sin productos activos y más de 6 meses sin productos.",
+      "Un puntaje de fuga para los activos y otro de reactivación para los inactivos.",
+      "Cada puntaje dice qué reglas sumaron, para que quien llama sepa por qué."
+    ],
+    "resultado": ["Listas ordenadas por prioridad, con la acción sugerida.", "Un historial por fecha de corte para medir si las campañas funcionaron."],
+    "tablero": "Así se ve el modelo"
+  },
+  {
+    "id": "03", "tipo": "Migración de Excel a Power BI", "titulo": "Ventas cruzadas",
+    "carpeta": "proyectos/03-ventas-cruzadas-powerbi",
+    "lista": "Cuántos productos adicionales se venden con cada préstamo, por producto, sucursal y colaborador.",
+    "tags": "Power BI, modelo estrella, DAX, T-SQL",
+    "resumen": "Por cada préstamo nuevo, mido qué otros productos se le vendieron al mismo cliente entre 30 días antes y 60 días después.",
+    "problema": "El tablero vivía en un Excel muy ancho, lleno de tablas dinámicas por sucursal y por cargo. Actualizarlo tomaba horas y no guardaba la historia.",
+    "solucion": [
+      "Pasé la lógica a una vista en SQL Server con la ventana de venta cruzada.",
+      "Una carga histórica por mes.",
+      "Un modelo estrella en Power BI con medidas de penetración, acumulado del año, variación y ranking."
+    ],
+    "resultado": ["Se actualiza con un refresco programado.", "Ahora hay historia mes a mes y todas las áreas ven las mismas cifras."],
+    "tablero": "Así se ve el tablero"
+  },
+  {
+    "id": "04", "tipo": "Reporte operativo", "titulo": "Comercios afiliados",
+    "carpeta": "proyectos/04-reporte-comercios",
+    "lista": "Un reporte por comercio, no por terminal: activos, inactivos, nuevos, ticket promedio y uso de canales digitales.",
+    "tags": "T-SQL, tablas temporales",
+    "resumen": "Consolida terminales y transacciones por comercio y por cliente, con la fecha de corte como parámetro.",
+    "problema": "Los reportes llegaban por terminal. Un comercio con tres terminales aparecía tres veces y los totales no cuadraban.",
+    "solucion": [
+      "Agrupo terminales y transacciones por comercio antes de unirlas, para no multiplicar filas.",
+      "Un comercio está activo si tuvo transacciones en los últimos 90 días.",
+      "Marco como nuevos a los que tienen menos de 3 meses afiliados."
+    ],
+    "resultado": ["Hay una lista de comercios para recuperar.", "Se puede seguir el arranque de los nuevos y comparar rubros."],
+    "tablero": "Así se ve el reporte"
+  },
+  {
+    "id": "05", "tipo": "Tablero gerencial", "titulo": "Semáforo de tarjeta de débito por sucursal",
+    "carpeta": "proyectos/05-semaforo-penetracion-tdd",
+    "lista": "Qué sucursales están por debajo de la meta de tarjeta de débito y cuántos clientes se pueden trabajar en cada una.",
+    "tags": "DAX, formato condicional, T-SQL",
+    "resumen": "Mide qué parte de los clientes con cuenta tiene también tarjeta de débito, por sucursal y al cierre de cada mes.",
+    "problema": "Muchos clientes tenían cuenta pero no tarjeta de débito, y eso es menos uso y menos comisiones. La gerencia necesitaba ver rápido dónde actuar.",
+    "solucion": [
+      "Una vista con los productos activos al cierre de cada mes.",
+      "Un semáforo: verde desde 70 %, amarillo entre 50 % y 70 %, rojo por debajo de 50 %.",
+      "La oportunidad de cada sucursal: clientes con cuenta y sin tarjeta."
+    ],
+    "resultado": ["Las campañas se priorizan por sucursal.", "Los porcentajes se recalculan con totales, así que cuadran a cualquier nivel."],
+    "tablero": "Así se ve el semáforo"
+  },
+  {
+    "id": "06", "tipo": "Automatización", "titulo": "El reporte mensual en un solo comando",
+    "carpeta": "proyectos/06-automatizacion-python",
+    "lista": "Carga, extracción, Excel con formato y envío por correo, programado y con log.",
+    "tags": "Python, pandas, openpyxl, pyodbc",
+    "resumen": "Un script de Python que ejecuta el cierre, arma el Excel y lo envía. Lo dejo programado y me olvido.",
+    "problema": "En cada cierre había que ejecutar procedimientos a mano, copiar los resultados a Excel, darles formato y enviarlos. Mucho tiempo repetido y mucho espacio para errores.",
+    "solucion": [
+      "El script corre la carga con su validación.",
+      "Arma el Excel con filtros, paneles fijos y los negativos en rojo.",
+      "Lo envía por correo y deja todo anotado en un log."
+    ],
+    "resultado": ["El cierre corre solo el día programado.", "Tiene un modo de prueba que funciona sin base de datos."],
+    "tablero": "Así funciona"
+  },
+  {
+    "id": "07", "tipo": "Diseño de procesos", "titulo": "Flujo de reasignación de cartera",
+    "carpeta": "proyectos/07-flujo-carterizacion",
+    "lista": "Las solicitudes para mover clientes entre ejecutivos pasaron del correo a un flujo con estados y aprobaciones.",
+    "tags": "Zoho Desk Blueprint, levantamiento de procesos",
+    "resumen": "Lideré el rediseño del proceso para mover clientes entre ejecutivos, con trazabilidad de principio a fin.",
+    "problema": "Las solicitudes llegaban por correo y Excel. Las aprobaciones se perdían y nadie sabía en qué estado estaba cada una.",
+    "solucion": [
+      "Un formulario estándar para cada solicitud.",
+      "Aprobación de la vicepresidencia solo cuando la regla lo exige.",
+      "Tiempos por etapa y escalamiento si algo se atrasa."
+    ],
+    "resultado": ["Cada solicitud tiene un estado y un responsable a la vista.", "Para auditar un cambio ya no hay que buscar en correos."],
+    "tablero": "El flujo"
+  },
+  {
+    "id": "08", "tipo": "API REST", "titulo": "API de mantenimiento de clientes",
+    "carpeta": "proyectos/08-api-mantenimiento-clientes",
+    "lista": "Un solo punto para crear, consultar, actualizar y bloquear clientes, con las mismas reglas para todos y un registro de cada cambio.",
+    "tags": "Python, FastAPI, Pydantic, T-SQL, pytest",
+    "resumen": "Una API cuyas reglas viven en procedimientos almacenados de SQL Server. Incluye un modo de prueba y pruebas automáticas.",
+    "problema": "Los datos de los clientes se cambiaban desde varios canales con validaciones distintas. Había documentos duplicados, correos mal escritos y cambios sin registro.",
+    "solucion": [
+      "Siete endpoints con validación de datos y documentación automática.",
+      "Las reglas viven en los procedimientos <code>sp_Cliente_*</code>, y sus errores se convierten en respuestas HTTP claras.",
+      "Una auditoría que guarda el valor anterior y el nuevo de cada campo."
+    ],
+    "resultado": ["Todos los canales aplican las mismas reglas.", "Las 7 pruebas automáticas pasan en el modo de prueba."],
+    "tablero": "La API funcionando"
+  }
+]
